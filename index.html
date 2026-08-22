@@ -1,0 +1,2422 @@
+<!doctype html><html><head><meta charset=utf8><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#E7E9E4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1413" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Left for Today — a daily spending tracker."><style>:root{color-scheme:light dark}body{margin:0;padding:0}img{max-width:100%}</style>
+<title>Left for Today</title>
+<meta name="apple-mobile-web-app-title" content="Left for Today">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+<link rel="icon" type="image/png" sizes="180x180" href="data:image/png;base64,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">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Karla:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+</head>
+<body>
+
+<style>
+:root{
+  --ground:#E7E9E4;
+  --surface:#F8F9F6;
+  --surface-2:#EFF1EC;
+  --ink:#131C1A;
+  --ink-soft:#5C6764;
+  --ink-faint:#8A9490;
+  --line:#D5DAD2;
+  --line-soft:#E2E6DE;
+  --brand:#0E5A54;
+  --brand-tint:#CFDEDA;
+  --on-brand:#F8F9F6;
+  --over:#A93A20;
+  --over-tint:#EFD9D2;
+  --warn:#8A5A12;
+  --warn-tint:#F0E3CB;
+  --wash:transparent;
+  --cat-1:#bc4e7c; --cat-2:#0097ac; --cat-3:#c76318; --cat-4:#3070c7;
+  --cat-5:#958500; --cat-6:#824ba9; --cat-7:#189f5a; --cat-8:#77837f;
+  --shadow:0 1px 2px rgba(19,28,26,.06), 0 8px 24px -12px rgba(19,28,26,.18);
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1413;
+    --surface:#171F1D;
+    --surface-2:#1E2725;
+    --ink:#E8EEEA;
+    --ink-soft:#93A19C;
+    --ink-faint:#6C7A76;
+    --line:#28322F;
+    --line-soft:#202926;
+    --brand:#4FC9B4;
+    --brand-tint:#1D3B38;
+    --on-brand:#0E1413;
+    --over:#E8785B;
+    --over-tint:#3A231C;
+    --warn:#E0AC5E;
+    --warn-tint:#33280F;
+    --cat-1:#cc5f8a; --cat-2:#00a3b7; --cat-3:#d3712f; --cat-4:#4886dc;
+    --cat-5:#a09200; --cat-6:#a06bc8; --cat-7:#30a865; --cat-8:#8A9793;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1413;
+  --surface:#171F1D;
+  --surface-2:#1E2725;
+  --ink:#E8EEEA;
+  --ink-soft:#93A19C;
+  --ink-faint:#6C7A76;
+  --line:#28322F;
+  --line-soft:#202926;
+  --brand:#4FC9B4;
+  --brand-tint:#1D3B38;
+  --on-brand:#0E1413;
+  --over:#E8785B;
+  --over-tint:#3A231C;
+  --warn:#E0AC5E;
+  --warn-tint:#33280F;
+  --cat-1:#cc5f8a; --cat-2:#00a3b7; --cat-3:#d3712f; --cat-4:#4886dc;
+  --cat-5:#a09200; --cat-6:#a06bc8; --cat-7:#30a865; --cat-8:#8A9793;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Karla","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+#shell{
+  max-width:452px;margin:0 auto;min-height:100vh;
+  background:var(--ground);
+  position:relative;
+  padding:0 18px calc(96px + env(safe-area-inset-bottom,0px));
+  transition:background .5s ease;
+}
+#shell.is-over{background:var(--over-tint)}
+
+/* ---------- shared bits ---------- */
+.eyebrow{
+  font-family:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r);
+  padding:16px;
+}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sect{
+  font-family:"Fraunces",Georgia,serif;
+  font-optical-sizing:auto;
+  font-size:19px;font-weight:500;margin:0;letter-spacing:-.01em;
+}
+.hint{font-size:13px;color:var(--ink-soft);line-height:1.45}
+
+.btn{
+  border:1px solid var(--line);background:var(--surface);
+  border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px;
+  transition:transform .08s ease, background .15s ease;
+}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--over);border-color:var(--over)}
+.btn.full{width:100%;justify-content:center;text-align:center}
+
+/* ---------- hero ---------- */
+header.hero{padding:26px 0 10px;text-align:center}
+.hero .datebar{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px}
+.hero .datebar .dot{width:5px;height:5px;border-radius:50%;background:var(--brand)}
+.bignum{
+  font-family:"Fraunces",Georgia,serif;
+  font-optical-sizing:auto;
+  font-weight:400;
+  font-size:clamp(72px,23vw,104px);
+  line-height:.92;
+  letter-spacing:-.045em;
+  font-variant-numeric:tabular-nums;
+  display:flex;align-items:flex-start;justify-content:center;gap:2px;
+  color:var(--brand);
+}
+#shell.is-over .bignum{color:var(--over)}
+.bignum .cur{font-size:.42em;line-height:1;margin-top:.28em;font-weight:300}
+.bignum .pence{font-size:.34em;line-height:1;margin-top:.42em;letter-spacing:0;color:var(--ink-soft)}
+.bignum .minus{font-size:.5em;line-height:1;margin-top:.34em}
+.verdict{margin-top:12px;font-size:15px;color:var(--ink-soft);text-wrap:balance;padding:0 8px}
+.verdict b{color:var(--ink);font-weight:600}
+
+/* day gauge */
+.gauge{margin-top:20px}
+.gauge .track{
+  height:9px;border-radius:5px;background:var(--surface-2);
+  border:1px solid var(--line-soft);
+  display:flex;overflow:hidden;
+}
+.gauge .fill{background:var(--brand);border-radius:5px 0 0 5px;transition:width .4s ease}
+.gauge .fill.overflow{background:var(--over);border-radius:0 5px 5px 0;margin-left:2px}
+.gauge .legend{display:flex;justify-content:space-between;margin-top:7px}
+.gauge .legend span{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-faint);letter-spacing:.02em}
+
+/* streak strip */
+.streakstrip{display:flex;align-items:center;gap:9px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.pip{width:9px;height:9px;border-radius:3px}
+.pip.ok{background:var(--brand)}
+.pip.blank{background:var(--brand);opacity:.32}
+.pip.bad{background:var(--over)}
+.pip.future{background:transparent;border:1px solid var(--line)}
+.streaktext{font-size:13px;color:var(--ink-soft)}
+
+/* ---------- backup warning ---------- */
+.warnbar{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  margin-top:18px;padding:12px 14px;
+  background:var(--warn-tint);border:1px solid var(--warn);border-radius:12px;
+  font-size:13.5px;line-height:1.4;color:var(--ink);
+}
+.warnbar .lead{flex:1}
+.warnbar b{color:var(--warn)}
+.warnbar .go{font-weight:700;color:var(--warn);white-space:nowrap}
+
+/* ---------- add bar ---------- */
+.addbar{display:flex;flex-direction:column;gap:8px;margin-top:22px}
+.addbar .pair{display:flex;gap:8px}
+.addbar .pair button{flex:1}
+.addbar button{padding:13px 12px;font-size:15px;border-radius:12px}
+
+/* ---------- log ---------- */
+.logitem{
+  display:flex;align-items:center;gap:11px;padding:10px 0;
+  border-bottom:1px solid var(--line-soft);
+}
+.logitem:last-child{border-bottom:none}
+.swatch{width:9px;height:26px;border-radius:3px;flex:none}
+.logitem .who{flex:1;min-width:0}
+.logitem .who .m{font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logitem .who .c{font-size:12px;color:var(--ink-faint)}
+.logitem .amt{font-family:"DM Mono",monospace;font-size:14.5px;font-variant-numeric:tabular-nums}
+.logitem img.thumb{width:30px;height:30px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.logitem .del{border:none;background:none;color:var(--ink-faint);font-size:17px;padding:2px 4px;line-height:1}
+.empty{color:var(--ink-faint);font-size:13.5px;padding:6px 0}
+
+/* ---------- goal ---------- */
+.thermo{margin-top:12px}
+.thermo .track{height:14px;border-radius:7px;background:var(--surface-2);border:1px solid var(--line-soft);overflow:hidden}
+.thermo .fill{height:100%;background:var(--brand);border-radius:7px;transition:width .5s ease}
+.thermo .marks{display:flex;justify-content:space-between;margin-top:8px}
+.thermo .marks span{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+.goalnum{font-family:"Fraunces",Georgia,serif;font-size:30px;font-weight:400;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+
+/* ---------- calendar ---------- */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}
+.cal .dow{font-family:"DM Mono",monospace;font-size:10px;color:var(--ink-faint);text-align:center;padding-bottom:2px}
+.cell{
+  aspect-ratio:1;border-radius:6px;border:1px solid transparent;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"DM Mono",monospace;font-size:11px;padding:0;background:var(--surface-2);
+  color:var(--ink-faint);
+}
+.cell.blank{visibility:hidden}
+.cell.under{background:var(--brand);color:var(--on-brand)}
+.cell.quiet{background:var(--brand-tint);color:var(--ink-soft)}
+.cell.over{background:var(--over);color:#fff}
+.cell.future{background:transparent;border-color:var(--line)}
+.cell.pre{background:transparent;border-color:var(--line-soft);color:var(--ink-faint);opacity:.55}
+.cell.today{box-shadow:0 0 0 2px var(--ground),0 0 0 3.5px var(--ink)}
+.calcap{margin-top:12px;font-size:13px;color:var(--ink-soft);min-height:20px}
+
+/* ---------- day strip ---------- */
+.daystrip{display:grid;grid-template-columns:repeat(7,12px);gap:3px;margin-top:12px}
+.dsq{width:12px;height:12px;border-radius:3px;background:var(--surface-2)}
+.dsq.lead{background:transparent;border:none}
+.dsq.under{background:var(--brand)}
+.dsq.quiet{background:var(--brand);opacity:.34}
+.dsq.over{background:var(--over)}
+.dsq.future,.dsq.pre{background:transparent;border:1px solid var(--line)}
+
+/* ---------- category bars ---------- */
+.catlist{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.catrow .catlabel{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.catrow .catlabel .nm{color:var(--ink);font-weight:500}
+.catrow .catlabel .vl{font-family:"DM Mono",monospace;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.catrow .bar{height:8px;border-radius:4px;background:var(--surface-2)}
+.catrow .bar i{display:block;height:100%;border-radius:4px;transition:width .4s ease}
+
+/* ---------- pause list ---------- */
+.pauseitem{border:1px solid var(--line);border-radius:12px;padding:13px;display:flex;flex-direction:column;gap:9px}
+.pauseitem.ready{border-color:var(--brand)}
+.pauseitem .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.pauseitem .what{font-weight:600;font-size:15px}
+.pauseitem .price{font-family:"Fraunces",Georgia,serif;font-size:22px;font-variant-numeric:tabular-nums}
+.countdown{font-family:"DM Mono",monospace;font-size:12px;color:var(--ink-faint)}
+.pauseitem .acts{display:flex;gap:8px}
+.pauseitem .acts .btn{flex:1;padding:8px}
+
+/* ---------- tabs ---------- */
+nav.tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  display:flex;justify-content:center;
+  background:linear-gradient(to top, var(--ground) 62%, transparent);
+  padding:14px 18px calc(14px + env(safe-area-inset-bottom,0px));
+  pointer-events:none;
+}
+nav.tabs .inner{
+  pointer-events:auto;
+  display:flex;gap:3px;width:100%;max-width:416px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:4px;box-shadow:var(--shadow);
+}
+nav.tabs button{
+  flex:1;border:none;background:transparent;border-radius:10px;
+  padding:9px 4px;font-size:13px;font-weight:600;color:var(--ink-faint);
+  transition:background .18s ease,color .18s ease;
+}
+nav.tabs button[aria-selected="true"]{background:var(--surface-2);color:var(--ink)}
+
+/* ---------- sheet ---------- */
+.sheet{
+  position:fixed;inset:0;z-index:60;display:none;
+  background:var(--ground);
+  overflow-y:auto;
+  padding:0 18px calc(24px + env(safe-area-inset-bottom,0px));
+}
+.sheet.open{display:block}
+.sheet .inner{padding-bottom:96px}
+.sheet .inner{max-width:452px;margin:0 auto}
+.sheet header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0 14px;position:sticky;top:0;background:var(--ground);z-index:2;
+}
+.sheet header h3{font-family:"Fraunces",Georgia,serif;font-size:20px;font-weight:500;margin:0}
+textarea#capture{
+  width:100%;min-height:104px;resize:vertical;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:13px;font-size:16px;line-height:1.45;
+}
+textarea#capture::placeholder{color:var(--ink-faint)}
+.seg{
+  display:flex;gap:3px;margin:0 0 14px;padding:4px;
+  background:var(--surface-2);border:1px solid var(--line-soft);border-radius:12px;
+}
+.segbtn{
+  flex:1;border:none;background:transparent;border-radius:9px;
+  padding:9px 6px;font-size:14px;font-weight:600;color:var(--ink-faint);
+  transition:background .16s ease,color .16s ease;
+}
+.segbtn[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.prow.inflow{border-color:var(--brand)}
+.logitem .amt.plus{color:var(--brand);font-weight:500}
+.parsed{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.prow{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-soft);border-radius:11px;padding:9px 10px}
+.prow input.pamt{width:74px;font-family:"DM Mono",monospace;font-size:14px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:7px;padding:6px 7px}
+.prow input.pmer{flex:1;min-width:0;background:transparent;border:none;font-size:14px;font-weight:600}
+.prow select{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:7px;padding:6px 5px;font-size:12.5px;max-width:112px}
+.prow .drop{border:none;background:none;color:var(--ink-faint);font-size:17px;line-height:1;padding:2px 3px}
+/* fixed so it can never slide out from under a finger as rows appear */
+.sheetfoot{
+  position:fixed;left:0;right:0;bottom:0;z-index:5;
+  padding:16px 18px calc(16px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(to top, var(--ground) 62%, transparent);
+  display:flex;justify-content:center;
+}
+.sheetfoot .btn{
+  width:100%;max-width:416px;padding:14px 12px;font-size:15px;border-radius:12px;
+  box-shadow:var(--shadow);
+}
+.bigflag{
+  margin-top:8px;border:1px solid var(--brand);background:var(--brand-tint);
+  border-radius:11px;padding:11px 12px;font-size:13.5px;line-height:1.45;
+}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:13px;color:var(--ink-soft);font-weight:600}
+.field input,.field select{
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:11px 12px;font-size:16px;width:100%;
+}
+.field input[type="number"]{font-family:"DM Mono",monospace}
+.billrow{display:flex;gap:7px;align-items:center}
+.billrow input:first-child{flex:1}
+.billrow input:nth-child(2){width:96px;font-family:"DM Mono",monospace}
+.billrow button{border:none;background:none;color:var(--ink-faint);font-size:18px;padding:2px 5px;line-height:1}
+.summary{background:var(--surface-2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:7px}
+.summary .ln{display:flex;justify-content:space-between;font-size:14px}
+.summary .ln.total{border-top:1px solid var(--line);padding-top:8px;margin-top:2px;font-weight:700}
+.summary .ln span:last-child{font-family:"DM Mono",monospace;font-variant-numeric:tabular-nums}
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:90;
+  background:var(--ink);color:var(--ground);padding:10px 16px;border-radius:11px;
+  font-size:14px;font-weight:600;opacity:0;transition:opacity .25s ease;pointer-events:none;
+  box-shadow:var(--shadow);max-width:88vw;text-align:center;
+}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+
+<div id="shell">
+  <div id="view-today"></div>
+  <div id="view-month" hidden></div>
+  <div id="view-history" hidden></div>
+  <div id="view-setup" hidden></div>
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <div class="inner">
+    <button role="tab" aria-selected="true" data-tab="today">Today</button>
+    <button role="tab" aria-selected="false" data-tab="month">Month</button>
+    <button role="tab" aria-selected="false" data-tab="history">History</button>
+    <button role="tab" aria-selected="false" data-tab="setup">Setup</button>
+  </div>
+</nav>
+
+<div class="sheet" id="sheet-add" role="dialog" aria-label="Log money">
+  <div class="inner">
+    <header>
+      <h3 id="add-title">What did you spend?</h3>
+      <button class="btn ghost" id="add-close">Close</button>
+    </header>
+    <div class="seg" role="tablist" aria-label="Kind of entry">
+      <button role="tab" class="segbtn" data-kind="out" aria-selected="true">Spent</button>
+      <button role="tab" class="segbtn" data-kind="in" aria-selected="false">Money in</button>
+    </div>
+    <textarea id="capture" placeholder="Type or paste, one per line:&#10;zara 68&#10;£4.20 pret&#10;deliveroo 23.50"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="shot-btn">Add screenshot</button>
+      <span class="hint" style="flex:1" id="shot-status">Photo library or camera</span>
+    </div>
+    <input type="file" id="shot-input" accept="image/*" class="sr">
+    <div class="parsed" id="parsed"></div>
+    <div id="bigflag-slot"></div>
+    <p class="hint" style="margin-top:14px">
+      Screenshots can't be read automatically. On your iPhone, press and hold the
+      screenshot in Photos, tap <b>Copy Text</b>, then paste it above &mdash; the amounts
+      get picked out for you.
+    </p>
+    <div class="sheetfoot">
+      <button class="btn primary full" id="add-save">Add to today</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet-pause" role="dialog" aria-label="Sleep on it">
+  <div class="inner">
+    <header>
+      <h3>Sleep on it</h3>
+      <button class="btn ghost" id="pause-close">Close</button>
+    </header>
+    <p class="hint">Park it for 24 hours. Tomorrow you decide &mdash; nothing comes out of today's money.</p>
+    <div class="stack" style="margin-top:14px">
+      <div class="field"><label for="p-what">What is it?</label><input id="p-what" type="text" placeholder="Beige coat, Lisbon flights…"></div>
+      <div class="field"><label for="p-amt">How much?</label><input id="p-amt" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div>
+      <button class="btn primary full" id="pause-save">Park it for 24 hours</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================ constants ============================ */
+var CATS = [
+  {id:"shopping",  name:"Shopping",   v:"--cat-1"},
+  {id:"travel",    name:"Travel",     v:"--cat-2"},
+  {id:"eatingout", name:"Eating out", v:"--cat-3"},
+  {id:"transport", name:"Transport",  v:"--cat-4"},
+  {id:"groceries", name:"Groceries",  v:"--cat-5"},
+  {id:"fun",       name:"Fun",        v:"--cat-6"},
+  {id:"health",    name:"Health",     v:"--cat-7"},
+  {id:"other",     name:"Other",      v:"--cat-8"}
+];
+var CATMAP = {};
+CATS.forEach(function(c){ CATMAP[c.id] = c; });
+
+var KEYWORDS = {
+  shopping:["zara","asos","h&m","h and m","hm ","uniqlo","mango","cos ","arket","vinted","depop","sephora","amazon","ebay","shein","nike","adidas","urban outfitter","other stories","massimo","primark","john lewis","selfridges","tk maxx","tkmaxx","farfetch","net-a-porter","lululemon","aritzia","reformation","gucci","prada","charity shop","topshop","anthropologie","free people","clothes","shoes","dress","jacket","coat","bag","jewellery","jewelry","makeup","skincare","zalando","ganni","aesop","glossier","the outnet","vestiaire"],
+  travel:["ryanair","easyjet","british airways","wizz","booking.com","booking ","airbnb","hotel","expedia","hostel","skyscanner","trainline","eurostar","flight","flights","vueling","klm","lufthansa","tui","jet2","holiday","resort","kayak","hostelworld","aer lingus","norwegian","emirates","baggage","luggage","travel","airport","transavia","hopper"],
+  eatingout:["restaurant","dinner","lunch","brunch","deliveroo","uber eats","ubereats","just eat","justeat","pizza","sushi","dishoom","wagamama","nando","five guys","honest burger","franco manca","bar ","pub","wine","cocktail","drinks","pret","costa","starbucks","caffe nero","gail","coffee","blank street","joe & the juice","grind","takeaway","bakery","brewery","tapas","ramen","thai","curry","kebab","mcdonald","greggs","leon","itsu","wasabi","bubble tea","matcha"],
+  transport:["uber","bolt ","tfl","oyster","train","tube","bus ","taxi","lime","petrol","shell","fuel","parking","citymapper","national rail","lner","gwr","thameslink","congestion","cab","freenow","voi","santander cycle"],
+  groceries:["tesco","sainsbury","waitrose","aldi","lidl","asda","morrisons","m&s","marks and spencer","marks & spencer","co-op","coop","ocado","whole foods","grocer","iceland","food shop","supermarket","spar","budgens","gettir","zapp","getir"],
+  fun:["cinema","odeon","curzon","picturehouse","theatre","concert","ticket","gig","spotify","netflix","museum","exhibition","waterstones","book","bowling","festival","comedy","disney+","mubi","event","club","apple music","audible","game","steam","padel","escape room"],
+  health:["gym","puregym","pure gym","third space","pharmacy","dentist","doctor","therapy","therapist","physio","classpass","barry","f45","boots","nhs","prescription","optician","specsavers","hair","nails","salon","massage","facial","waxing","brows","supplements","holland & barrett","vitamin","yoga","pilates","reformer"]
+};
+
+var STORE = "leftfortoday.v1";
+var DAY = 86400000;
+
+/* ============================ state ============================ */
+var state = null;
+var tab = "today";
+var pendingRows = [];
+var addKind = "out";
+var pendingImg = null;
+var calSel = null;
+
+function blankState(){
+  return {
+    v:1,
+    setup:{ done:false, income:0, bills:[], savings:0, payday:1,
+            goalName:"", goalTarget:0, threshold:50, startedOn:todayKey() },
+    spends:[], inflows:[], pauses:[], banked:0, skipped:0, seen:{}, updatedAt:0
+  };
+}
+
+function normalise(p){
+  var s = Object.assign(blankState(), p || {});
+  s.setup = Object.assign(blankState().setup, (p && p.setup) || {});
+  s.spends = Array.isArray(s.spends) ? s.spends : [];
+  s.inflows = Array.isArray(s.inflows) ? s.inflows : [];
+  s.pauses = Array.isArray(s.pauses) ? s.pauses : [];
+  s.updatedAt = +s.updatedAt || 0;
+  return s;
+}
+
+/* Merge two copies of the record without ever dropping a spend.
+   Entries are keyed by id, so the union is always the fuller history. */
+function entryCount(x){
+  return (x.spends||[]).length + (x.inflows||[]).length + (x.pauses||[]).length;
+}
+
+function merge(a, b){
+  var ca = entryCount(a), cb = entryCount(b);
+  var newer, older;
+  if(ca === 0 && cb > 0){ newer = b; older = a; }        // an empty copy never wins
+  else if(cb === 0 && ca > 0){ newer = a; older = b; }
+  else { newer = (a.updatedAt||0) >= (b.updatedAt||0) ? a : b; older = newer === a ? b : a; }
+  var out = normalise(JSON.parse(JSON.stringify(newer)));
+  ["spends","inflows","pauses"].forEach(function(k){
+    var seen = {};
+    out[k].forEach(function(x){ seen[x.id] = true; });
+    older[k].forEach(function(x){ if(x && x.id && !seen[x.id]){ out[k].push(x); seen[x.id] = true; } });
+  });
+  out.spends.sort(function(x,y){ return (x.ts||0) - (y.ts||0); });
+  out.inflows.sort(function(x,y){ return (x.ts||0) - (y.ts||0); });
+  out.skipped = Math.max(+a.skipped||0, +b.skipped||0);
+  return out;
+}
+
+function load(){
+  var raw = null, spare = null;
+  try {
+    raw = localStorage.getItem(STORE);
+    spare = localStorage.getItem(STORE + ".lastgood");
+  } catch(e){}
+  try { state = raw ? normalise(JSON.parse(raw)) : blankState(); }
+  catch(e){ state = blankState(); }
+  // main copy empty but the spare has history? take the spare back.
+  if(entryCount(state) === 0 && spare){
+    try {
+      var sp = normalise(JSON.parse(spare));
+      if(entryCount(sp) > 0){
+        state = sp;
+        try { localStorage.setItem(STORE, spare); } catch(e2){}
+        setTimeout(function(){ toast("Recovered your history"); }, 400);
+      }
+    } catch(e3){}
+  }
+  // make sure the spare copy exists from the very first load, not just after
+  // the next edit — that gap is what makes a half-cleared browser look empty
+  if(entryCount(state) > 0){
+    try { localStorage.setItem(STORE + ".lastgood", JSON.stringify(state)); } catch(e4){}
+  }
+}
+
+function save(){
+  state.updatedAt = Date.now();
+  writeLocal();
+  scheduleSync();
+}
+
+function writeLocal(){
+  try {
+    var blob = JSON.stringify(state);
+    localStorage.setItem(STORE, blob);
+    // a second copy that only ever holds a version WITH entries in it, so a
+    // half-cleared browser can't leave you staring at an empty app
+    if(entryCount(state) > 0) localStorage.setItem(STORE + ".lastgood", blob);
+  } catch(e){
+    // most likely storage full — shed the oldest screenshots and retry once
+    var shed = 0;
+    for(var i=0;i<state.spends.length && shed<12;i++){
+      if(state.spends[i].img){ delete state.spends[i].img; shed++; }
+    }
+    try { localStorage.setItem(STORE, JSON.stringify(state)); }
+    catch(e2){ toast("Couldn't save — storage is full"); }
+  }
+}
+
+/* ============================ cloud copy ============================
+   The browser copy is instant but a browser can be cleared. A second copy is
+   written to a JSON file in a GitHub repo you own, using a fine-grained token
+   you paste in Setup. On load the two are merged by id, so nothing is ever
+   lost — whichever copy is behind, the union of both wins.              */
+var GH_KEY = STORE + ".github";
+var sync = { cfg:null, sha:null, status:"local", pending:false, timer:null, tries:0, dirty:false,
+             diag:{ capability:"not checked", read:"not tried", lastPush:null, lastError:null } };
+
+function ghLoadCfg(){
+  try {
+    var raw = localStorage.getItem(GH_KEY);
+    if(!raw) return null;
+    var c = JSON.parse(raw);
+    if(c && c.token && c.owner && c.repo){
+      c.path = c.path || "store.json";
+      c.branch = c.branch || "main";
+      return c;
+    }
+  } catch(e){}
+  return null;
+}
+function ghSaveCfg(c){ try { localStorage.setItem(GH_KEY, JSON.stringify(c)); } catch(e){} }
+function ghClearCfg(){ try { localStorage.removeItem(GH_KEY); } catch(e){} }
+
+function b64encode(str){
+  var bytes = new TextEncoder().encode(str), bin = "";
+  for(var i=0;i<bytes.length;i+=0x8000){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000));
+  }
+  return btoa(bin);
+}
+function b64decode(b64){
+  var bin = atob(String(b64).replace(/\s+/g,"")), bytes = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function ghUrl(c){
+  return "https://api.github.com/repos/" + encodeURIComponent(c.owner) + "/" +
+         encodeURIComponent(c.repo) + "/contents/" +
+         String(c.path).split("/").map(encodeURIComponent).join("/");
+}
+function ghHeaders(c){
+  return { "Authorization":"Bearer " + c.token,
+           "Accept":"application/vnd.github+json",
+           "X-GitHub-Api-Version":"2022-11-28" };
+}
+function ghCode(status){
+  return (status === 401 || status === 403) ? "not_writer"
+       : status === 404 ? "not_found"
+       : "http_" + status;
+}
+
+function syncLabel(){
+  return sync.status === "saved"   ? "Synced to GitHub"
+       : sync.status === "saving"  ? "Syncing…"
+       : sync.status === "readonly"? "Token can't write — check its permissions"
+       : sync.status === "error"   ? "Sync didn't go through — it'll retry"
+       : "Saved on this device only";
+}
+function paintSync(){
+  Array.prototype.forEach.call(document.querySelectorAll(".sync-chip"), function(e){
+    e.textContent = syncLabel();
+  });
+  // the Today banner depends on sync status, so keep it honest
+  if(tab === "today" && state && state.setup && state.setup.done){
+    var shown = !!document.querySelector(".warnbar");
+    var should = sync.status !== "saved" && entryCount(state) > 0;
+    if(shown !== should) renderToday();
+  }
+}
+
+/* Read the copy held in the repo. Resolves to null when there isn't one yet;
+   rejects with a code when the token or the repo is the problem, so "nothing
+   saved yet" never looks the same as "I couldn't get in". */
+function fetchRemote(){
+  var c = sync.cfg;
+  if(!c) return Promise.resolve(null);
+  var url = ghUrl(c) + "?ref=" + encodeURIComponent(c.branch) + "&t=" + Date.now();
+  return fetch(url, { headers: ghHeaders(c), cache:"no-store" }).then(function(r){
+    if(r.status === 404){ sync.sha = null; sync.diag.read = "none saved yet"; return null; }
+    if(!r.ok){
+      sync.diag.read = "read failed (HTTP " + r.status + ")";
+      throw { code: ghCode(r.status), message: "read HTTP " + r.status };
+    }
+    return r.json().then(function(j){
+      sync.sha = j.sha || null;
+      sync.diag.read = "read ok";
+      try { return JSON.parse(b64decode(j.content || "")); }
+      catch(e){ sync.diag.read = "file there but unreadable"; return null; }
+    });
+  }).catch(function(e){
+    if(e && e.code) throw e;
+    sync.diag.read = "blocked: " + (e && e.message ? e.message : "fetch failed");
+    throw { code:"network", message: e && e.message ? e.message : "fetch failed" };
+  });
+}
+
+function initSync(){
+  sync.cfg = ghLoadCfg();
+  if(!sync.cfg){
+    sync.diag.capability = "not connected";
+    sync.status = "local";
+    paintSync();
+    return Promise.resolve();
+  }
+  sync.diag.capability = sync.cfg.owner + "/" + sync.cfg.repo + " · " + sync.cfg.path;
+  sync.status = "saving"; paintSync();
+  return fetchRemote().then(function(remote){
+    var rCount = -1;
+    if(remote && remote.state){
+      var r = normalise(remote.state);
+      rCount = entryCount(r);
+      var before = entryCount(state) + "|" + state.updatedAt;
+      state = merge(state, r);
+      if(entryCount(state) + "|" + state.updatedAt !== before){ writeLocal(); render(); }
+    }
+    // the repo copy is current only if it already holds everything
+    var behind = rCount !== entryCount(state);
+    if(!behind && !sync.dirty){ sync.status = "saved"; sync.tries = 0; paintSync(); }
+    else scheduleSync();
+  }).catch(function(e){ ghFail(e); });
+}
+
+function scheduleSync(){
+  sync.dirty = true;
+  if(!sync.cfg){ paintSync(); return; }
+  sync.pending = true;
+  sync.status = "saving"; paintSync();
+  clearTimeout(sync.timer);
+  sync.timer = setTimeout(pushSync, 2500);
+}
+
+function pushSync(){
+  if(!sync.cfg || !sync.pending) return;
+  var c = sync.cfg;
+  var payload = JSON.stringify({ app:"left-for-today", savedAt:new Date().toISOString(), state:state }, null, 2);
+  var body = {
+    message: "left for today — " + entryCount(state) + " entries — " + new Date().toISOString(),
+    content: b64encode(payload),
+    branch: c.branch
+  };
+  if(sync.sha) body.sha = sync.sha;
+  sync.pending = false;
+  return fetch(ghUrl(c), {
+    method: "PUT",
+    headers: Object.assign({ "Content-Type":"application/json" }, ghHeaders(c)),
+    body: JSON.stringify(body)
+  }).then(function(r){
+    if(r.status === 409 || r.status === 422){
+      // another device saved first — take the union and try again
+      return fetchRemote().then(function(remote){
+        if(remote && remote.state){ state = merge(state, normalise(remote.state)); writeLocal(); render(); }
+        sync.pending = true;
+        clearTimeout(sync.timer);
+        sync.timer = setTimeout(pushSync, 1500);
+      });
+    }
+    if(!r.ok){
+      return r.text().then(function(t){
+        throw { code: ghCode(r.status), message: t ? t.slice(0,160) : ("HTTP " + r.status) };
+      });
+    }
+    return r.json().then(function(j){
+      sync.sha = (j.content && j.content.sha) || sync.sha;
+      sync.status = "saved"; sync.tries = 0; sync.dirty = false;
+      sync.diag.lastPush = new Date().toISOString();
+      sync.diag.lastError = null;
+      try { localStorage.setItem(STORE + ".lastpush", String(Date.now())); } catch(e){}
+      paintSync();
+    });
+  }).catch(function(err){ ghFail(err); });
+}
+
+function ghFail(err){
+  var code = err && err.code;
+  sync.diag.lastError = (code || "unknown") + (err && err.message ? " — " + err.message : "");
+  if(code === "not_writer" || code === "not_found"){
+    sync.status = "readonly"; paintSync(); return;
+  }
+  sync.status = "error"; paintSync();
+  if(sync.tries++ < 3){
+    sync.pending = true;
+    clearTimeout(sync.timer);
+    sync.timer = setTimeout(pushSync, 4000 + Math.random()*3000);
+  }
+}
+
+/* connect / disconnect, driven from Setup */
+function ghConnect(cfg){
+  sync.sha = null; sync.tries = 0; sync.dirty = true;
+  ghSaveCfg(cfg);
+  return initSync().then(function(){
+    if(sync.status === "readonly" || sync.status === "error"){
+      toast("Couldn't reach that repo — check the details");
+    } else {
+      sync.pending = true;
+      return pushSync().then(function(){
+        toast(sync.status === "saved" ? "Connected and synced" : "Connected");
+        render();
+      });
+    }
+    render();
+  });
+}
+function ghDisconnect(){
+  clearTimeout(sync.timer);
+  ghClearCfg();
+  sync.cfg = null; sync.sha = null; sync.pending = false; sync.dirty = false;
+  sync.status = "local";
+  sync.diag = { capability:"not connected", read:"not tried", lastPush:null, lastError:null };
+  render();
+  toast("Disconnected — this device only");
+}
+function ghSyncNow(){
+  if(!sync.cfg){ toast("Not connected yet"); return; }
+  sync.tries = 0;
+  initSync().then(function(){
+    if(sync.status !== "saved"){ sync.pending = true; pushSync(); }
+    render();
+  });
+}
+
+// don't leave a change stranded if the app is closed mid-debounce
+window.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "hidden" && sync.pending){ clearTimeout(sync.timer); pushSync(); }
+});
+
+/* ============================ dates ============================ */
+function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function keyOf(d){
+  var m = d.getMonth()+1, day = d.getDate();
+  return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(day<10?"0":"")+day;
+}
+function todayKey(){ return keyOf(new Date()); }
+function fromKey(k){ var p = k.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+function addDays(d,n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()+n); }
+function daysBetween(a,b){ return Math.round((startOfDay(b)-startOfDay(a))/DAY); }
+function lastDayOf(y,m){ return new Date(y, m+1, 0).getDate(); }
+
+function periodStartFor(d, payday){
+  var y = d.getFullYear(), m = d.getMonth();
+  var s = new Date(y, m, Math.min(payday, lastDayOf(y,m)));
+  if(startOfDay(d) < startOfDay(s)){
+    var pm = new Date(y, m-1, 1);
+    s = new Date(pm.getFullYear(), pm.getMonth(), Math.min(payday, lastDayOf(pm.getFullYear(), pm.getMonth())));
+  }
+  return startOfDay(s);
+}
+function period(){
+  var pd = state.setup.payday || 1;
+  var now = new Date();
+  var start = periodStartFor(now, pd);
+  var nx = new Date(start.getFullYear(), start.getMonth()+1, 1);
+  var next = new Date(nx.getFullYear(), nx.getMonth(), Math.min(pd, lastDayOf(nx.getFullYear(), nx.getMonth())));
+  var end = addDays(next, -1);
+  var days = daysBetween(start, end) + 1;
+  var elapsed = daysBetween(start, now) + 1;
+  return { start:start, end:end, days:days, elapsed:elapsed, remaining:days - elapsed + 1 };
+}
+
+/* ============================ money ============================ */
+function money(n){
+  var neg = n < 0; n = Math.abs(n);
+  return (neg?"−£":"£") + n.toLocaleString("en-GB",{minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function money0(n){
+  var neg = n < 0; n = Math.abs(n);
+  return (neg?"−£":"£") + Math.round(n).toLocaleString("en-GB");
+}
+
+function billsTotal(){
+  return (state.setup.bills||[]).reduce(function(a,b){ return a + (+b.amount||0); }, 0);
+}
+var _idx = { key:null, map:null };
+function dayIndex(){
+  var key = (state.updatedAt||0) + "|" + state.spends.length;
+  if(_idx.key === key) return _idx.map;
+  var m = {};
+  state.spends.forEach(function(s){ (m[s.day] = m[s.day] || []).push(s); });
+  _idx.key = key; _idx.map = m;
+  return m;
+}
+function spendsOn(k){ return dayIndex()[k] || []; }
+
+var _inx = { key:null, map:null };
+function inflowIndex(){
+  var key = (state.updatedAt||0) + "|" + state.inflows.length;
+  if(_inx.key === key) return _inx.map;
+  var m = {};
+  state.inflows.forEach(function(f){ (m[f.day] = m[f.day] || []).push(f); });
+  _inx.key = key; _inx.map = m;
+  return m;
+}
+function inflowsOn(k){ return inflowIndex()[k] || []; }
+function inflowsBetween(a, b){
+  return state.inflows.filter(function(f){
+    var d = fromKey(f.day); return d >= a && d <= b;
+  });
+}
+function sumWhere(list, dest){
+  return list.reduce(function(a, f){ return f.dest === dest ? a + f.amount : a; }, 0);
+}
+function totalOn(k){ return spendsOn(k).reduce(function(a,s){ return a + s.amount; }, 0); }
+
+function budget(){
+  var p = period();
+  var inNow = inflowsBetween(p.start, p.end);
+  var boost = sumWhere(inNow, "spend");
+  var spendable = Math.max(0, (+state.setup.income||0) - billsTotal() - (+state.setup.savings||0)) + boost;
+  var base = p.days > 0 ? spendable / p.days : 0;
+
+  var inPeriod = state.spends.filter(function(s){
+    var d = fromKey(s.day);
+    return d >= p.start && d <= p.end;
+  });
+  var spentPeriod = inPeriod.reduce(function(a,s){ return a + s.amount; }, 0);
+  var tk = todayKey();
+  var spentToday = inPeriod.reduce(function(a,s){ return s.day===tk ? a + s.amount : a; }, 0);
+  var spentBefore = spentPeriod - spentToday;
+
+  var forward = spendable - spentBefore;
+  var allowance = p.remaining > 0 ? forward / p.remaining : forward;
+  var leftToday = allowance - spentToday;
+
+  // only count days you've actually been tracking, so a mid-cycle start
+  // doesn't credit you for weeks of imaginary underspending
+  var trackedFrom = startOfDay(fromKey(state.setup.startedOn || keyOf(p.start)));
+  var effStart = trackedFrom > p.start ? trackedFrom : p.start;
+  var trackedDays = Math.max(1, Math.min(p.elapsed, daysBetween(effStart, new Date()) + 1));
+  var coreBase = p.days > 0 ? (spendable - boost) / p.days : 0;
+  var savedSoFar = (+state.setup.savings||0) * (trackedDays / p.days);
+  var surplus = (coreBase * trackedDays) + boost - spentPeriod;
+
+  return {
+    p:p, spendable:spendable, base:base, spentPeriod:spentPeriod, spentToday:spentToday,
+    allowance:allowance, leftToday:leftToday, left:spendable - spentPeriod,
+    savedSoFar:savedSoFar, surplus:surplus, trackedDays:trackedDays,
+    boost:boost, inSaved:sumWhere(inNow, "save"), inToday:inflowsOn(todayKey()),
+    goalNow: goalTotal()
+  };
+}
+
+/* Every pay cycle you've tracked, newest last. Derived from the spend
+   history itself, so nothing is ever archived away or aged out. */
+var _cyc = { key:null, val:null };
+function cycles(){
+  var ck = [state.updatedAt||0, state.spends.length, state.inflows.length, state.setup.payday, state.setup.income,
+            billsTotal(), state.setup.savings, state.setup.startedOn, todayKey()].join("|");
+  if(_cyc.key === ck) return _cyc.val;
+  var pd = state.setup.payday || 1;
+  var baseSpendable = Math.max(0, (+state.setup.income||0) - billsTotal() - (+state.setup.savings||0));
+  var savings = +state.setup.savings || 0;
+  var today = startOfDay(new Date());
+  var trackFrom = startOfDay(fromKey(firstDayKey()));
+  var cur = periodStartFor(trackFrom, pd);
+  var out = [], guard = 0;
+
+  while(cur <= today && guard++ < 400){
+    var nx = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+    var next = new Date(nx.getFullYear(), nx.getMonth(), Math.min(pd, lastDayOf(nx.getFullYear(), nx.getMonth())));
+    var end = addDays(next, -1);
+    var days = daysBetween(cur, end) + 1;
+    var inflows = inflowsBetween(cur, end);
+    var boost = sumWhere(inflows, "spend");
+    var inSaved = sumWhere(inflows, "save");
+    var spendable = baseSpendable + boost;
+    var base = days > 0 ? spendable / days : 0;
+    var coreBase = days > 0 ? baseSpendable / days : 0;
+
+    var effStart = trackFrom > cur ? trackFrom : cur;
+    var effEnd = end < today ? end : today;
+    var tracked = Math.max(0, daysBetween(effStart, effEnd) + 1);
+
+    var items = state.spends.filter(function(s){
+      var d = fromKey(s.day); return d >= cur && d <= end;
+    });
+    var spent = items.reduce(function(a,s){ return a + s.amount; }, 0);
+    var cats = {};
+    items.forEach(function(s){ cats[s.category] = (cats[s.category]||0) + s.amount; });
+
+    var under = 0, over = 0;
+    for(var i=0;i<days;i++){
+      var st = dayStatus(keyOf(addDays(cur, i)), base);
+      if(st === "over") over++;
+      else if(st === "under" || st === "quiet") under++;
+    }
+
+    out.push({
+      start:cur, end:end, days:days, base:base, spendable:spendable,
+      tracked:tracked, items:items, spent:spent, cats:cats,
+      inflows:inflows, boost:boost, inSaved:inSaved,
+      under:under, over:over, open: end >= today,
+      saved: savings * (tracked / days),
+      surplus: (coreBase * tracked) + boost - spent
+    });
+    cur = next;
+  }
+  _cyc.key = ck; _cyc.val = out;
+  return out;
+}
+
+function goalTotal(){
+  var t = +state.banked || 0;
+  cycles().forEach(function(c){ t += c.saved + c.surplus + c.inSaved; });
+  return Math.max(0, t);
+}
+
+/* ============================ parsing ============================ */
+function categorise(text){
+  var t = (" " + text + " ").toLowerCase();
+  for(var i=0;i<CATS.length;i++){
+    var id = CATS[i].id;
+    var ks = KEYWORDS[id];
+    if(!ks) continue;
+    for(var j=0;j<ks.length;j++){ if(t.indexOf(ks[j]) !== -1) return id; }
+  }
+  return "other";
+}
+
+function parseEntries(text){
+  var out = [];
+  var chunks = String(text||"").split(/[\n;]+|,(?=\s*[^\d])/);
+  chunks.forEach(function(raw){
+    var line = raw.trim();
+    if(!line) return;
+    var m = line.match(/(?:£|gbp\s*)?(\d{1,6}(?:[.,]\d{1,2})?)/i);
+    if(!m) return;
+    var amt = parseFloat(m[1].replace(",", "."));
+    if(!isFinite(amt) || amt <= 0) return;
+    var merch = line.replace(m[0], " ")
+                    .replace(/[£$€]/g,"")
+                    .replace(/\b(gbp|paid|spent|for|on|at|to|the)\b/gi," ")
+                    .replace(/\s{2,}/g," ").trim();
+    merch = merch.replace(/^[-–—•*.\s]+|[-–—•*.\s]+$/g,"");
+    if(!merch) merch = "Unlabelled";
+    merch = merch.charAt(0).toUpperCase() + merch.slice(1);
+    out.push({ amount: Math.round(amt*100)/100, merchant: merch, category: categorise(merch) });
+  });
+  return out;
+}
+
+/* ============================ history helpers ============================ */
+function dayStatus(k, base){
+  var t = startOfDay(fromKey(k)), now = startOfDay(new Date());
+  if(t > now) return "future";
+  if(t < startOfDay(fromKey(firstDayKey()))) return "pre";
+  var list = spendsOn(k);
+  if(!list.length) return "quiet";
+  var tot = list.reduce(function(a,s){ return a+s.amount; },0);
+  return tot > base ? "over" : "under";
+}
+function firstDayKey(){
+  if(!state.spends.length) return state.setup.startedOn || todayKey();
+  var ks = state.spends.map(function(s){ return s.day; }).sort();
+  var a = fromKey(ks[0]), b = fromKey(state.setup.startedOn || ks[0]);
+  return keyOf(a < b ? a : b);
+}
+function streak(){
+  var b = budget().base;
+  if(b <= 0) return 0;
+  var n = 0, d = startOfDay(new Date());
+  var floor = startOfDay(fromKey(firstDayKey()));
+  while(d >= floor){
+    var st = dayStatus(keyOf(d), b);
+    if(st === "over") break;
+    n++; d = addDays(d, -1);
+  }
+  return n;
+}
+
+/* ============================ rendering ============================ */
+function el(tag, cls, txt){
+  var e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(txt !== undefined && txt !== null) e.textContent = txt;
+  return e;
+}
+function toast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ t.classList.remove("show"); }, 2200);
+}
+
+function render(){
+  document.getElementById("view-today").hidden = tab !== "today";
+  document.getElementById("view-month").hidden = tab !== "month";
+  document.getElementById("view-history").hidden = tab !== "history";
+  document.getElementById("view-setup").hidden = tab !== "setup";
+  Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function(b){
+    b.setAttribute("aria-selected", String(b.dataset.tab === tab));
+  });
+  if(tab === "today") renderToday();
+  if(tab === "month") renderMonth();
+  if(tab === "history") renderHistory();
+  if(tab === "setup") renderSetup();
+}
+
+/* ---------- TODAY ---------- */
+function renderToday(){
+  var v = document.getElementById("view-today");
+  v.innerHTML = "";
+
+  if(!state.setup.done){
+    v.appendChild(welcome());
+    document.getElementById("shell").classList.remove("is-over");
+    return;
+  }
+
+  var b = budget();
+  var over = b.leftToday < 0;
+  document.getElementById("shell").classList.toggle("is-over", over);
+
+  var head = el("header","hero");
+  var db = el("div","datebar");
+  db.appendChild(el("div","dot"));
+  db.appendChild(el("span","eyebrow", new Date().toLocaleDateString("en-GB",{weekday:"long", day:"numeric", month:"long"})));
+  head.appendChild(db);
+
+  head.appendChild(bigNumber(Math.abs(b.leftToday), over));
+
+  var vd = el("p","verdict");
+  vd.innerHTML = verdictText(b, over);
+  head.appendChild(vd);
+
+  // day gauge
+  var g = el("div","gauge");
+  var track = el("div","track");
+  var allow = Math.max(b.allowance, 0.01);
+  var used = Math.min(b.spentToday, allow);
+  var f = el("div","fill");
+  f.style.width = (used/Math.max(allow, b.spentToday) * 100) + "%";
+  track.appendChild(f);
+  if(b.spentToday > allow){
+    var f2 = el("div","fill overflow");
+    f2.style.width = ((b.spentToday-allow)/b.spentToday * 100) + "%";
+    track.appendChild(f2);
+  }
+  g.appendChild(track);
+  var lg = el("div","legend");
+  lg.appendChild(el("span", null, money(b.spentToday) + " spent"));
+  lg.appendChild(el("span", null, "of " + money(Math.max(b.allowance,0))));
+  g.appendChild(lg);
+  head.appendChild(g);
+
+  // streak strip — last 7 days
+  var ss = el("div","streakstrip");
+  for(var i=6;i>=0;i--){
+    var k = keyOf(addDays(new Date(), -i));
+    var st = dayStatus(k, b.base);
+    var pip = el("div","pip " + (st==="under"?"ok":st==="over"?"bad":st==="quiet"?"blank":"future"));
+    pip.setAttribute("aria-hidden","true");
+    pip.title = fromKey(k).toLocaleDateString("en-GB",{weekday:"short", day:"numeric"}) + " — " + money(totalOn(k));
+    ss.appendChild(pip);
+  }
+  var n = streak();
+  ss.appendChild(el("span","streaktext", n === 0 ? "Over today — tomorrow resets it"
+    : n === 1 ? "1 day on track" : n + " days on track"));
+  head.appendChild(ss);
+  v.appendChild(head);
+
+  if(sync.status !== "saved" && entryCount(state) > 0){
+    var wb = el("button","warnbar");
+    var lead = el("div","lead");
+    lead.innerHTML = "<b>Not backed up.</b> This history only exists on this device right now.";
+    wb.appendChild(lead);
+    wb.appendChild(el("span","go","Fix \u2192"));
+    wb.onclick = function(){ tab = "setup"; render(); window.scrollTo(0, 99999); };
+    v.appendChild(wb);
+  }
+
+  // add bar
+  var ab = el("div","addbar");
+  var a1 = el("button","btn primary","Log a spend");
+  a1.onclick = function(){ openAdd("out"); };
+  ab.appendChild(a1);
+  var pair = el("div","pair");
+  var a3 = el("button","btn","Money in");
+  a3.onclick = function(){ openAdd("in"); };
+  var a2 = el("button","btn","Sleep on it");
+  a2.onclick = openPause;
+  pair.appendChild(a3); pair.appendChild(a2);
+  ab.appendChild(pair);
+  v.appendChild(ab);
+
+  // waiting pauses
+  var waiting = state.pauses.filter(function(p){ return p.status === "waiting"; });
+  if(waiting.length){
+    var pc = el("div","card"); pc.style.marginTop = "18px";
+    var ph = el("div","spread");
+    ph.appendChild(el("h2","sect","On hold"));
+    ph.appendChild(el("span","eyebrow", waiting.length + (waiting.length===1?" item":" items")));
+    pc.appendChild(ph);
+    var pl = el("div","stack"); pl.style.marginTop = "12px";
+    waiting.sort(function(a,b2){ return a.created - b2.created; }).forEach(function(p){
+      pl.appendChild(pauseCard(p));
+    });
+    pc.appendChild(pl);
+    v.appendChild(pc);
+  }
+
+  // today's log
+  var lc = el("div","card"); lc.style.marginTop = "18px";
+  var lh = el("div","spread");
+  lh.appendChild(el("h2","sect","Today"));
+  var inToday = b.inToday.reduce(function(a2,f){ return a2 + f.amount; }, 0);
+  lh.appendChild(el("span","eyebrow", inToday > 0
+    ? money(b.spentToday) + " out · " + money(inToday) + " in"
+    : money(b.spentToday)));
+  lc.appendChild(lh);
+  var list = spendsOn(todayKey()).slice().reverse();
+  var ins = b.inToday.slice().reverse();
+  var box = el("div"); box.style.marginTop = "8px";
+  if(!list.length && !ins.length){
+    box.appendChild(el("p","empty","Nothing logged yet today."));
+  } else {
+    ins.forEach(function(f){ box.appendChild(inflowRow(f)); });
+    list.forEach(function(s){ box.appendChild(logRow(s)); });
+  }
+  lc.appendChild(box);
+  v.appendChild(lc);
+
+  // compact goal strip
+  if((+state.setup.goalTarget||0) > 0){
+    var gc = el("div","card"); gc.style.marginTop = "14px";
+    var gh = el("div","spread");
+    gh.appendChild(el("span","eyebrow", state.setup.goalName || "Savings goal"));
+    gh.appendChild(el("span","eyebrow", Math.round(Math.min(100, b.goalNow/state.setup.goalTarget*100)) + "%"));
+    gc.appendChild(gh);
+    var gt = el("div","thermo"); gt.style.marginTop = "9px";
+    var gtr = el("div","track"); gtr.style.height = "10px";
+    var gf = el("div","fill");
+    gf.style.width = Math.max(0, Math.min(100, b.goalNow/state.setup.goalTarget*100)) + "%";
+    gtr.appendChild(gf); gt.appendChild(gtr);
+    var gm = el("div","marks");
+    gm.appendChild(el("span",null, money0(b.goalNow)));
+    gm.appendChild(el("span",null, "of " + money0(state.setup.goalTarget)));
+    gt.appendChild(gm);
+    gc.appendChild(gt);
+    v.appendChild(gc);
+  }
+
+  if(state.skipped > 0){
+    var sk = el("p","hint");
+    sk.style.cssText = "text-align:center;margin-top:16px";
+    sk.innerHTML = "You've talked yourself out of <b>" + money0(state.skipped) + "</b> so far.";
+    v.appendChild(sk);
+  }
+}
+
+function bigNumber(n, over){
+  var cents = Math.round(n * 100);
+  var whole = Math.floor(cents / 100);
+  var pence = cents % 100;
+  var wrap = el("div","bignum");
+  if(over) wrap.appendChild(el("span","minus","−"));
+  wrap.appendChild(el("span","cur","£"));
+  wrap.appendChild(el("span","whole num", whole.toLocaleString("en-GB")));
+  wrap.appendChild(el("span","pence num", "." + (pence<10?"0":"") + pence));
+  wrap.setAttribute("role","img");
+  wrap.setAttribute("aria-label", (over ? "Over by " : "Left to spend today: ") + money(n));
+  return wrap;
+}
+
+function verdictText(b, over){
+  if(over){
+    return "That's how far past today you've gone. It comes out of the next " +
+      b.p.remaining + " day" + (b.p.remaining===1?"":"s") + " &mdash; tomorrow starts at <b>" +
+      money(Math.max(0,(b.spendable - b.spentPeriod)/Math.max(1,b.p.remaining-1))) + "</b>.";
+  }
+  if(b.spentToday === 0){
+    return "Yours to spend today. <b>" + money(b.left) + "</b> left for the " +
+      b.p.remaining + " day" + (b.p.remaining===1?"":"s") + " until payday.";
+  }
+  return "Still yours today, after " + money(b.spentToday) + ". <b>" + money(b.left) +
+    "</b> left until payday.";
+}
+
+function logRow(s){
+  var r = el("div","logitem");
+  var sw = el("div","swatch");
+  sw.style.background = "var(" + CATMAP[s.category].v + ")";
+  r.appendChild(sw);
+  if(s.img){
+    var im = document.createElement("img");
+    im.className = "thumb"; im.src = s.img; im.alt = "";
+    r.appendChild(im);
+  }
+  var who = el("div","who");
+  who.appendChild(el("div","m", s.merchant));
+  who.appendChild(el("div","c", CATMAP[s.category].name));
+  r.appendChild(who);
+  r.appendChild(el("div","amt num", money(s.amount)));
+  var del = el("button","del","×");
+  del.setAttribute("aria-label","Delete " + s.merchant);
+  del.onclick = function(){
+    state.spends = state.spends.filter(function(x){ return x.id !== s.id; });
+    save(); render(); toast("Removed");
+  };
+  r.appendChild(del);
+  return r;
+}
+
+function inflowRow(f){
+  var r = el("div","logitem");
+  var sw = el("div","swatch");
+  sw.style.background = "var(--brand)";
+  r.appendChild(sw);
+  if(f.img){
+    var im = document.createElement("img");
+    im.className = "thumb"; im.src = f.img; im.alt = "";
+    r.appendChild(im);
+  }
+  var who = el("div","who");
+  who.appendChild(el("div","m", f.source || "Money in"));
+  who.appendChild(el("div","c", f.dest === "save"
+    ? "Into " + (state.setup.goalName || "savings")
+    : "Into what you can spend"));
+  r.appendChild(who);
+  r.appendChild(el("div","amt plus num", "+" + money(f.amount)));
+  var del = el("button","del","×");
+  del.setAttribute("aria-label","Delete " + (f.source || "money in"));
+  del.onclick = function(){
+    state.inflows = state.inflows.filter(function(x){ return x.id !== f.id; });
+    save(); render(); toast("Removed");
+  };
+  r.appendChild(del);
+  return r;
+}
+
+function pauseCard(p){
+  var due = p.created + DAY;
+  var ready = Date.now() >= due;
+  var c = el("div","pauseitem" + (ready ? " ready" : ""));
+  var top = el("div","top");
+  top.appendChild(el("div","what", p.what));
+  top.appendChild(el("div","price num", money(p.amount)));
+  c.appendChild(top);
+  if(!ready){
+    var mins = Math.max(1, Math.round((due - Date.now())/60000));
+    var txt = mins >= 60 ? Math.floor(mins/60) + "h " + (mins%60) + "m left" : mins + "m left";
+    c.appendChild(el("div","countdown", txt + " — decide tomorrow"));
+  } else {
+    c.appendChild(el("div","countdown","24 hours are up. Still want it?"));
+    var acts = el("div","acts");
+    var buy = el("button","btn","Buy it");
+    buy.onclick = function(){
+      p.status = "bought";
+      state.spends.push({ id: uid(), day: todayKey(), amount: p.amount,
+        merchant: p.what, category: categorise(p.what), ts: Date.now() });
+      save(); render(); toast("Logged " + money(p.amount));
+    };
+    var skip = el("button","btn danger","Skip it");
+    skip.onclick = function(){
+      p.status = "skipped";
+      state.skipped = (+state.skipped||0) + p.amount;
+      save(); render(); toast("Kept " + money(p.amount));
+    };
+    acts.appendChild(buy); acts.appendChild(skip);
+    c.appendChild(acts);
+  }
+  return c;
+}
+
+/* ---------- MONTH ---------- */
+function renderMonth(){
+  var v = document.getElementById("view-month");
+  v.innerHTML = "";
+  document.getElementById("shell").classList.remove("is-over");
+
+  if(!state.setup.done){ v.appendChild(welcome()); return; }
+  var b = budget();
+
+  var h = el("header","hero"); h.style.textAlign = "left"; h.style.paddingBottom = "4px";
+  h.appendChild(el("span","eyebrow",
+    b.p.start.toLocaleDateString("en-GB",{day:"numeric",month:"short"}) + " — " +
+    b.p.end.toLocaleDateString("en-GB",{day:"numeric",month:"short"})));
+  var t = el("h1"); t.className = "sect";
+  t.style.fontSize = "27px"; t.style.marginTop = "6px";
+  t.textContent = "This pay cycle";
+  h.appendChild(t);
+  v.appendChild(h);
+
+  v.appendChild(spendableCard(b));
+  v.appendChild(goalCard(b));
+  v.appendChild(calendarCard(b));
+  v.appendChild(categoryCard(b));
+  if(state.skipped > 0) v.appendChild(skippedCard());
+}
+
+function spendableCard(b){
+  var c = el("div","card"); c.style.marginTop = "16px";
+  c.appendChild(el("h2","sect","Where you are"));
+  var s = el("div","summary"); s.style.marginTop = "12px";
+  if(b.boost > 0){
+    s.appendChild(line("Your usual pot", money(b.spendable - b.boost)));
+    s.appendChild(line("Money in", "+" + money(b.boost)));
+  }
+  s.appendChild(line("Spendable this cycle", money(b.spendable)));
+  s.appendChild(line("Spent so far", money(b.spentPeriod)));
+  s.appendChild(line("Left for " + b.p.remaining + " day" + (b.p.remaining===1?"":"s"), money(b.left), true));
+  c.appendChild(s);
+  if(b.inSaved > 0){
+    var ip = el("p","hint"); ip.style.marginTop = "12px";
+    ip.innerHTML = "Plus <b>" + money(b.inSaved) + "</b> you sent straight to " +
+      (state.setup.goalName || "savings") + " this cycle.";
+    c.appendChild(ip);
+  }
+  var pace = b.surplus;
+  var pl = el("p","hint"); pl.style.marginTop = "12px";
+  pl.innerHTML = (pace >= 0
+    ? "You're <b>" + money(pace) + " under</b> the flat pace of " + money(b.base) + " a day"
+    : "You're <b>" + money(-pace) + " over</b> the flat pace of " + money(b.base) + " a day")
+    + ", across " + b.trackedDays + " day" + (b.trackedDays===1?"":"s") + " of tracking.";
+  c.appendChild(pl);
+  return c;
+}
+function line(a, bv, total){
+  var l = el("div","ln" + (total?" total":""));
+  l.appendChild(el("span",null,a));
+  l.appendChild(el("span","num",bv));
+  return l;
+}
+
+function goalCard(b){
+  var c = el("div","card"); c.style.marginTop = "16px";
+  var target = +state.setup.goalTarget || 0;
+  var head = el("div","spread");
+  head.appendChild(el("h2","sect", state.setup.goalName || "Savings goal"));
+  c.appendChild(head);
+
+  if(target <= 0){
+    c.appendChild(el("p","hint","Set a goal in Setup and this bar fills every time you come in under."));
+    return c;
+  }
+  var now = b.goalNow;
+  var pct = Math.max(0, Math.min(100, now/target*100));
+  var g = el("div","goalnum num", money0(now)); g.style.marginTop = "6px";
+  c.appendChild(g);
+  var th = el("div","thermo");
+  var tr = el("div","track");
+  var fl = el("div","fill"); fl.style.width = pct + "%";
+  tr.appendChild(fl); th.appendChild(tr);
+  var mk = el("div","marks");
+  mk.appendChild(el("span",null, Math.round(pct) + "% there"));
+  mk.appendChild(el("span",null, "goal " + money0(target)));
+  th.appendChild(mk);
+  c.appendChild(th);
+  var rem = Math.max(0, target - now);
+  c.appendChild(el("p","hint", rem <= 0
+    ? "You've hit it. Pick a new one."
+    : money0(rem) + " to go. Every day you finish under budget nudges this along."));
+  return c;
+}
+
+function calendarCard(b){
+  var c = el("div","card"); c.style.marginTop = "16px";
+  var head = el("div","spread");
+  head.appendChild(el("h2","sect","Day by day"));
+  var n = streak();
+  head.appendChild(el("span","eyebrow", n + " day streak"));
+  c.appendChild(head);
+
+  var grid = el("div","cal");
+  ["M","T","W","T","F","S","S"].forEach(function(d,i){
+    var e = el("div","dow", d); e.setAttribute("aria-hidden","true"); grid.appendChild(e);
+  });
+  var first = b.p.start;
+  var lead = (first.getDay() + 6) % 7;
+  for(var i=0;i<lead;i++){ var bl = el("div","cell blank"); grid.appendChild(bl); }
+  for(var d=0; d<b.p.days; d++){
+    var day = addDays(first, d);
+    var k = keyOf(day);
+    var st = dayStatus(k, b.base);
+    var cell = el("button","cell " + st, String(day.getDate()));
+    if(k === todayKey()) cell.classList.add("today");
+    var tot = totalOn(k);
+    var label = day.toLocaleDateString("en-GB",{weekday:"short", day:"numeric", month:"short"});
+    var detail = st==="future" ? "not yet"
+      : st==="pre" ? "before you started"
+      : st==="quiet" ? "nothing logged"
+      : money(tot) + " of " + money(b.base) + (st==="over" ? " · over" : " · under");
+    cell.title = label + " — " + detail;
+    cell.setAttribute("aria-label", cell.title);
+    (function(txt){ cell.onclick = function(){ calSel = txt; renderMonth(); }; })(cell.title);
+    grid.appendChild(cell);
+  }
+  c.appendChild(grid);
+  var cap = el("div","calcap", calSel || "Green means you came in under " + money(b.base) + " that day. Tap any square.");
+  c.appendChild(cap);
+  return c;
+}
+
+function categoryCard(b){
+  var c = el("div","card"); c.style.marginTop = "16px";
+  c.appendChild(el("h2","sect","What it went on"));
+  var inP = state.spends.filter(function(s){
+    var d = fromKey(s.day); return d >= b.p.start && d <= b.p.end;
+  });
+  if(!inP.length){
+    c.appendChild(el("p","hint","Nothing logged this cycle yet."));
+    return c;
+  }
+  var totals = {};
+  inP.forEach(function(s){ totals[s.category] = (totals[s.category]||0) + s.amount; });
+  var rows = CATS.filter(function(k){ return totals[k.id] > 0; })
+    .map(function(k){ return { cat:k, val: totals[k.id] }; })
+    .sort(function(x,y){ return y.val - x.val; });
+  var max = rows[0].val;
+  var listWrap = el("div","catlist");
+  rows.forEach(function(r){
+    var row = el("div","catrow");
+    var lab = el("div","catlabel");
+    lab.appendChild(el("span","nm", r.cat.name));
+    lab.appendChild(el("span","vl num", money(r.val)));
+    row.appendChild(lab);
+    var bar = el("div","bar");
+    var i2 = document.createElement("i");
+    i2.style.width = (r.val/max*100) + "%";
+    i2.style.background = "var(" + r.cat.v + ")";
+    bar.appendChild(i2);
+    row.appendChild(bar);
+    listWrap.appendChild(row);
+  });
+  c.appendChild(listWrap);
+  return c;
+}
+
+function skippedCard(){
+  var c = el("div","card"); c.style.marginTop = "16px";
+  c.appendChild(el("h2","sect","Talked yourself out of"));
+  var g = el("div","goalnum num", money0(state.skipped));
+  g.style.marginTop = "6px"; g.style.color = "var(--brand)";
+  c.appendChild(g);
+  var skips = state.pauses.filter(function(p){ return p.status === "skipped"; }).slice(-5).reverse();
+  c.appendChild(el("p","hint", "Things you parked for 24 hours and then didn't buy."));
+  if(skips.length){
+    var box = el("div"); box.style.marginTop = "6px";
+    skips.forEach(function(p){
+      var r = el("div","logitem");
+      var sw = el("div","swatch"); sw.style.background = "var(--brand)"; sw.style.opacity = ".45";
+      r.appendChild(sw);
+      var who = el("div","who");
+      who.appendChild(el("div","m", p.what));
+      r.appendChild(who);
+      r.appendChild(el("div","amt num", money(p.amount)));
+      box.appendChild(r);
+    });
+    c.appendChild(box);
+  }
+  return c;
+}
+
+/* ---------- HISTORY ---------- */
+var openCycle = null;
+
+function renderHistory(){
+  var v = document.getElementById("view-history");
+  v.innerHTML = "";
+  document.getElementById("shell").classList.remove("is-over");
+  if(!state.setup.done){ v.appendChild(welcome()); return; }
+
+  var all = cycles().slice().reverse();
+
+  var h = el("header","hero"); h.style.textAlign = "left"; h.style.paddingBottom = "4px";
+  h.appendChild(el("span","eyebrow","History"));
+  var t = el("h1","sect"); t.style.fontSize = "27px"; t.style.marginTop = "6px";
+  t.textContent = "Everything so far";
+  h.appendChild(t);
+  v.appendChild(h);
+
+  if(!state.spends.length){
+    var e = el("div","card"); e.style.marginTop = "16px";
+    e.appendChild(el("p","hint","Nothing logged yet. Once you start, every entry stays here — it never expires and nothing gets tidied away."));
+    v.appendChild(e);
+    return;
+  }
+
+  // all time
+  var totSpent = state.spends.reduce(function(a,s){ return a + s.amount; }, 0);
+  var under = 0, over = 0, tracked = 0, cats = {};
+  all.forEach(function(c){
+    under += c.under; over += c.over; tracked += c.tracked;
+    Object.keys(c.cats).forEach(function(k){ cats[k] = (cats[k]||0) + c.cats[k]; });
+  });
+  var top = Object.keys(cats).sort(function(a,b){ return cats[b]-cats[a]; })[0];
+
+  var c0 = el("div","card"); c0.style.marginTop = "16px";
+  c0.appendChild(el("h2","sect","All time"));
+  var sm = el("div","summary"); sm.style.marginTop = "12px";
+  sm.appendChild(line("Days tracked", String(tracked)));
+  sm.appendChild(line("Spends logged", String(state.spends.length)));
+  sm.appendChild(line("Days under / over", under + " / " + over));
+  if(top) sm.appendChild(line("Biggest category", CATMAP[top].name + " · " + money0(cats[top])));
+  var totIn = state.inflows.reduce(function(a,f){ return a + f.amount; }, 0);
+  if(totIn > 0) sm.appendChild(line("Money in", "+" + money(totIn)));
+  sm.appendChild(line("Total spent", money(totSpent), true));
+  c0.appendChild(sm);
+  if(state.skipped > 0){
+    var sp = el("p","hint"); sp.style.marginTop = "12px";
+    sp.innerHTML = "Plus <b>" + money0(state.skipped) + "</b> you parked and then didn't buy.";
+    c0.appendChild(sp);
+  }
+  v.appendChild(c0);
+
+  // per cycle
+  all.forEach(function(c){ v.appendChild(cycleCard(c)); });
+
+  var foot = el("p","hint");
+  foot.style.cssText = "text-align:center;margin-top:20px";
+  foot.innerHTML = "Nothing here is ever deleted or aged out. <span class=\"sync-chip\">" + syncLabel() + "</span>.";
+  v.appendChild(foot);
+}
+
+function cycleCard(c){
+  var card = el("div","card"); card.style.marginTop = "16px";
+  var head = el("div","spread");
+  head.appendChild(el("h2","sect",
+    c.start.toLocaleDateString("en-GB",{day:"numeric",month:"short"}) + " — " +
+    c.end.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"2-digit"})));
+  head.appendChild(el("span","eyebrow", c.open ? "Now" : (c.surplus >= 0 ? "Under" : "Over")));
+  card.appendChild(head);
+
+  var big = el("div","spread"); big.style.marginTop = "8px";
+  var amt = el("div","goalnum num", money0(c.spent));
+  big.appendChild(amt);
+  var right = el("div","eyebrow", "of " + money0(c.spendable));
+  big.appendChild(right);
+  card.appendChild(big);
+
+  // day strip — one square per day
+  var strip = el("div","daystrip");
+  strip.setAttribute("aria-label", "One square per day, weeks running Monday to Sunday");
+  var lead = (c.start.getDay() + 6) % 7;
+  for(var L=0;L<lead;L++) strip.appendChild(el("span","dsq lead"));
+  for(var i=0;i<c.days;i++){
+    var k = keyOf(addDays(c.start, i));
+    var st = dayStatus(k, c.base);
+    var sq = el("span","dsq " + st);
+    sq.title = fromKey(k).toLocaleDateString("en-GB",{day:"numeric",month:"short"}) + " — " +
+      (st==="future" ? "not yet" : st==="pre" ? "before you started" : money(totalOn(k)));
+    strip.appendChild(sq);
+  }
+  card.appendChild(strip);
+
+  if(c.boost > 0 || c.inSaved > 0){
+    var inl = el("p","hint"); inl.style.marginTop = "10px";
+    var bits = [];
+    if(c.boost > 0) bits.push("<b>" + money0(c.boost) + "</b> in, added to the pot");
+    if(c.inSaved > 0) bits.push("<b>" + money0(c.inSaved) + "</b> in, straight to savings");
+    inl.innerHTML = bits.join(" · ");
+    card.appendChild(inl);
+  }
+  var note = el("p","hint"); note.style.marginTop = "10px";
+  note.innerHTML = c.tracked === 0 ? "Not tracked."
+    : (c.surplus >= 0
+        ? "<b>" + money0(c.surplus) + " under</b> pace over " + c.tracked + " tracked day" + (c.tracked===1?"":"s") + "."
+        : "<b>" + money0(-c.surplus) + " over</b> pace over " + c.tracked + " tracked day" + (c.tracked===1?"":"s") + ".")
+      + " " + c.over + " day" + (c.over===1?"":"s") + " above " + money(c.base) + ".";
+  card.appendChild(note);
+
+  // top categories
+  var ids = Object.keys(c.cats).sort(function(a,b){ return c.cats[b]-c.cats[a]; }).slice(0,3);
+  if(ids.length){
+    var max = c.cats[ids[0]];
+    var cl = el("div","catlist");
+    ids.forEach(function(id){
+      var row = el("div","catrow");
+      var lab = el("div","catlabel");
+      lab.appendChild(el("span","nm", CATMAP[id].name));
+      lab.appendChild(el("span","vl num", money(c.cats[id])));
+      row.appendChild(lab);
+      var bar = el("div","bar");
+      var f = document.createElement("i");
+      f.style.width = (c.cats[id]/max*100) + "%";
+      f.style.background = "var(" + CATMAP[id].v + ")";
+      bar.appendChild(f); row.appendChild(bar);
+      cl.appendChild(row);
+    });
+    card.appendChild(cl);
+  }
+
+  if(c.items.length || c.inflows.length){
+    var key = keyOf(c.start);
+    var openNow = openCycle === key;
+    var count = c.items.length + c.inflows.length;
+    var tg = el("button","btn ghost full", openNow ? "Hide the " + count + " entries" : "Show all " + count + " entries");
+    tg.style.marginTop = "12px";
+    tg.onclick = function(){ openCycle = openNow ? null : key; renderHistory(); };
+    card.appendChild(tg);
+    if(openNow) card.appendChild(entryList(c));
+  }
+  return card;
+}
+
+function entryList(c){
+  var wrap = el("div"); wrap.style.marginTop = "6px";
+  var byDay = {};
+  c.items.forEach(function(s){ (byDay[s.day] = byDay[s.day] || []).push(s); });
+  var inByDay = {};
+  c.inflows.forEach(function(f){ (inByDay[f.day] = inByDay[f.day] || []).push(f); });
+  var days = Object.keys(byDay).concat(Object.keys(inByDay)).filter(function(k, i, a){ return a.indexOf(k) === i; });
+  days.sort().reverse().forEach(function(k){
+    var dh = el("div","spread"); dh.style.cssText = "margin-top:14px";
+    dh.appendChild(el("span","eyebrow", fromKey(k).toLocaleDateString("en-GB",{weekday:"short", day:"numeric", month:"short"})));
+    var tot = (byDay[k]||[]).reduce(function(a,s){ return a+s.amount; },0);
+    dh.appendChild(el("span","eyebrow", money(tot)));
+    wrap.appendChild(dh);
+    (inByDay[k]||[]).forEach(function(f){
+      var ir = el("div","logitem");
+      var isw = el("div","swatch"); isw.style.background = "var(--brand)";
+      ir.appendChild(isw);
+      var iwho = el("div","who");
+      iwho.appendChild(el("div","m", f.source || "Money in"));
+      iwho.appendChild(el("div","c", f.dest === "save" ? "To savings" : "To spending"));
+      ir.appendChild(iwho);
+      ir.appendChild(el("div","amt plus num", "+" + money(f.amount)));
+      wrap.appendChild(ir);
+    });
+    (byDay[k]||[]).forEach(function(s){
+      var r = el("div","logitem");
+      var sw = el("div","swatch");
+      sw.style.background = "var(" + CATMAP[s.category].v + ")";
+      r.appendChild(sw);
+      if(s.img){
+        var im = document.createElement("img");
+        im.className = "thumb"; im.src = s.img; im.alt = "";
+        r.appendChild(im);
+      }
+      var who = el("div","who");
+      who.appendChild(el("div","m", s.merchant));
+      who.appendChild(el("div","c", CATMAP[s.category].name));
+      r.appendChild(who);
+      r.appendChild(el("div","amt num", money(s.amount)));
+      wrap.appendChild(r);
+    });
+  });
+  return wrap;
+}
+
+/* ---------- SETUP ---------- */
+function welcome(){
+  var w = el("div"); w.style.padding = "34px 0 0";
+  var t = el("h1");
+  t.style.cssText = "font-family:Fraunces,Georgia,serif;font-size:34px;font-weight:400;letter-spacing:-.025em;line-height:1.1;margin:0 0 12px;text-wrap:balance";
+  t.textContent = "One number, every morning.";
+  w.appendChild(t);
+  var p = el("p","hint");
+  p.style.fontSize = "15px";
+  p.textContent = "Tell it what comes in and what's already spoken for. It works out what's actually yours each day, and it shrinks when you overspend.";
+  w.appendChild(p);
+  var b = el("button","btn primary full","Set it up");
+  b.style.marginTop = "20px";
+  b.onclick = function(){ tab = "setup"; render(); window.scrollTo(0,0); };
+  w.appendChild(b);
+  return w;
+}
+
+function renderSetup(){
+  var v = document.getElementById("view-setup");
+  v.innerHTML = "";
+  document.getElementById("shell").classList.remove("is-over");
+  var s = state.setup;
+
+  var h = el("header","hero"); h.style.textAlign = "left"; h.style.paddingBottom = "6px";
+  h.appendChild(el("span","eyebrow","Setup"));
+  var t = el("h1","sect"); t.style.fontSize = "27px"; t.style.marginTop = "6px";
+  t.textContent = "Your numbers";
+  h.appendChild(t);
+  v.appendChild(h);
+
+  var c1 = el("div","card"); c1.style.marginTop = "10px";
+  var st1 = el("div","stack");
+  st1.appendChild(numField("Take-home pay a month", "income", s.income, "After tax, what actually lands"));
+  st1.appendChild(numField("Straight into savings", "savings", s.savings, "Ring-fenced before anything else"));
+  var pd = el("div","field");
+  pd.appendChild(el("label", null, "Payday"));
+  var sel = document.createElement("select");
+  for(var i=1;i<=28;i++){
+    var o = document.createElement("option");
+    o.value = i; o.textContent = i + ordinal(i) + " of the month";
+    if(i === (+s.payday||1)) o.selected = true;
+    sel.appendChild(o);
+  }
+  sel.onchange = function(){ state.setup.payday = +sel.value; save(); };
+  pd.appendChild(sel);
+  st1.appendChild(pd);
+  c1.appendChild(st1);
+  v.appendChild(c1);
+
+  // bills
+  var c2 = el("div","card"); c2.style.marginTop = "16px";
+  var bh = el("div","spread");
+  bh.appendChild(el("h2","sect","Fixed costs"));
+  var billsTot = el("span","eyebrow", money(billsTotal()));
+  billsTot.id = "bills-total";
+  bh.appendChild(billsTot);
+  c2.appendChild(bh);
+  c2.appendChild(el("p","hint","Rent, bills, subscriptions — anything that leaves whether you like it or not."));
+  var bl = el("div","stack"); bl.style.marginTop = "12px";
+  (s.bills||[]).forEach(function(bill, idx){
+    var r = el("div","billrow");
+    var nm = document.createElement("input");
+    nm.type = "text"; nm.value = bill.name || ""; nm.placeholder = "Rent";
+    nm.className = "billname";
+    nm.style.cssText = "background:var(--surface-2);border:1px solid var(--line-soft);border-radius:9px;padding:9px 10px;font-size:15px";
+    nm.oninput = function(){ state.setup.bills[idx].name = nm.value; save(); };
+    var am = document.createElement("input");
+    am.type = "number"; am.inputMode = "decimal"; am.step = "0.01";
+    am.value = bill.amount || ""; am.placeholder = "0";
+    am.style.cssText = "background:var(--surface-2);border:1px solid var(--line-soft);border-radius:9px;padding:9px 10px;font-size:15px";
+    am.oninput = function(){ state.setup.bills[idx].amount = parseFloat(am.value)||0; save(); refreshSetupNumbers(); };
+    var rm = el("button", null, "×");
+    rm.setAttribute("aria-label","Remove " + (bill.name||"cost"));
+    rm.onclick = function(){ state.setup.bills.splice(idx,1); save(); renderSetup(); };
+    r.appendChild(nm); r.appendChild(am); r.appendChild(rm);
+    bl.appendChild(r);
+  });
+  var addb = el("button","btn ghost full","+ Add a cost");
+  addb.onclick = function(){
+    state.setup.bills = state.setup.bills || [];
+    state.setup.bills.push({name:"", amount:0});
+    save(); renderSetup();
+  };
+  bl.appendChild(addb);
+  c2.appendChild(bl);
+  v.appendChild(c2);
+
+  // goal
+  var c3 = el("div","card"); c3.style.marginTop = "16px";
+  c3.appendChild(el("h2","sect","What you're saving for"));
+  var st3 = el("div","stack"); st3.style.marginTop = "12px";
+  var gn = el("div","field");
+  gn.appendChild(el("label", null, "Call it something"));
+  var gni = document.createElement("input");
+  gni.type = "text"; gni.value = s.goalName || ""; gni.placeholder = "Deposit, emergency fund, Japan…";
+  gni.oninput = function(){ state.setup.goalName = gni.value; save(); };
+  gn.appendChild(gni);
+  st3.appendChild(gn);
+  st3.appendChild(numField("Target", "goalTarget", s.goalTarget, ""));
+  var ab2 = el("div","field");
+  ab2.appendChild(el("label", null, "Already saved"));
+  var abi = document.createElement("input");
+  abi.type = "number"; abi.inputMode = "decimal"; abi.step = "0.01";
+  abi.value = (+state.banked) ? state.banked : "";
+  abi.placeholder = "0";
+  abi.oninput = function(){ state.banked = parseFloat(abi.value) || 0; save(); };
+  ab2.appendChild(abi);
+  ab2.appendChild(el("div","hint","Where the bar starts from"));
+  st3.appendChild(ab2);
+  st3.appendChild(numField("Sleep-on-it threshold", "threshold", s.threshold,
+    "Anything at or above this gets offered a 24-hour hold"));
+  c3.appendChild(st3);
+  v.appendChild(c3);
+
+  // maths summary
+  var b = budget();
+  var c4 = el("div","card"); c4.style.marginTop = "16px";
+  c4.appendChild(el("h2","sect","So, the maths"));
+  var sm = el("div","summary"); sm.style.marginTop = "12px";
+  sm.appendChild(idLine("sum-in", "Pay in", money(+s.income||0)));
+  sm.appendChild(idLine("sum-bills", "Fixed costs out", "−" + money(billsTotal())));
+  sm.appendChild(idLine("sum-sav", "Savings out", "−" + money(+s.savings||0)));
+  sm.appendChild(idLine("sum-spend", "Yours to spend", money(b.spendable), true));
+  c4.appendChild(sm);
+  var pl = el("p","hint"); pl.id = "sum-note"; pl.style.marginTop = "12px";
+  pl.innerHTML = "That's about <b>" + money(b.base) + " a day</b> across a " + b.p.days +
+    "-day cycle. The number on the front adjusts as you go.";
+  c4.appendChild(pl);
+  if(!s.done){
+    var done = el("button","btn primary full","Done — show me the number");
+    done.style.marginTop = "14px";
+    done.onclick = function(){
+      if((+state.setup.income||0) <= 0){ toast("Add your take-home pay first"); return; }
+      state.setup.done = true; state.setup.startedOn = todayKey();
+      save(); tab = "today"; render(); window.scrollTo(0,0);
+    };
+    c4.appendChild(done);
+  }
+  v.appendChild(c4);
+
+  // data
+  var c5 = el("div","card"); c5.style.marginTop = "16px";
+  c5.appendChild(el("h2","sect","Your data"));
+  var ok = sync.status === "saved";
+  var dh = el("p","hint");
+  dh.innerHTML = "Status: <b class=\"sync-chip\">" + syncLabel() + "</b>.";
+  c5.appendChild(dh);
+
+  var warn = el("p","hint");
+  warn.innerHTML = ok
+    ? "Kept in this browser and in your GitHub repo. Every device you connect to the same repo sees the same history \u2014 entries are merged by id, so nothing gets overwritten."
+    : "<b>Right now this is the only copy.</b> iPhone also treats the Home Screen icon and Safari as two separate apps with separate storage. Connect a repo below, or copy your data out, before you rely on it.";
+  c5.appendChild(warn);
+
+  var diag = el("div","summary"); diag.style.marginTop = "12px";
+  diag.appendChild(line("Entries held", String(entryCount(state))));
+  diag.appendChild(line("Synced to", sync.diag.capability));
+  diag.appendChild(line("Reading the copy", sync.diag.read));
+  var lp = null;
+  try { lp = localStorage.getItem(STORE + ".lastpush"); } catch(e){}
+  diag.appendChild(line("Last written", lp ? new Date(+lp).toLocaleString("en-GB") : "never"));
+  if(sync.diag.lastError) diag.appendChild(line("Last error", sync.diag.lastError));
+  c5.appendChild(diag);
+
+  c5.appendChild(ghCard());
+
+  var acts = el("div","stack"); acts.style.marginTop = "12px";
+
+  var cp = el("button","btn primary full","Copy my data");
+  cp.onclick = function(){ copyOut(cp); };
+  acts.appendChild(cp);
+
+  var pasteWrap = el("div");
+  var pb = el("button","btn full","Paste data in");
+  var ta = document.createElement("textarea");
+  ta.placeholder = "Paste the copied text here, then tap Restore";
+  ta.style.cssText = "display:none;width:100%;min-height:88px;margin-top:8px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:14px";
+  var confirmBtn = el("button","btn full","Restore from what I pasted");
+  confirmBtn.style.cssText = "display:none;margin-top:8px";
+  pb.onclick = function(){
+    var open = ta.style.display !== "none";
+    ta.style.display = open ? "none" : "block";
+    confirmBtn.style.display = open ? "none" : "block";
+    if(!open) ta.focus();
+  };
+  confirmBtn.onclick = function(){ pasteIn(ta.value); };
+  pasteWrap.appendChild(pb); pasteWrap.appendChild(ta); pasteWrap.appendChild(confirmBtn);
+  acts.appendChild(pasteWrap);
+
+  var exp = el("button","btn full","Back up to a file");
+  exp.onclick = doExport;
+  acts.appendChild(exp);
+  var impWrap = el("div");
+  var imp = el("button","btn ghost full","Restore from a backup");
+  var impIn = document.createElement("input");
+  impIn.type = "file"; impIn.accept = "application/json,.json"; impIn.className = "sr";
+  imp.onclick = function(){ impIn.click(); };
+  impIn.onchange = function(){ doImport(impIn.files[0]); };
+  impWrap.appendChild(imp); impWrap.appendChild(impIn);
+  acts.appendChild(impWrap);
+  var wipe = el("button","btn ghost full","Start again from scratch");
+  wipe.style.color = "var(--over)";
+  wipe.onclick = function(){
+    if(wipe.dataset.armed){
+      try { localStorage.removeItem(STORE + ".lastgood"); } catch(e){}
+      state = blankState(); save(); tab = "setup"; render(); window.scrollTo(0,0);
+      toast("Wiped");
+    } else {
+      wipe.dataset.armed = "1";
+      wipe.textContent = "Tap again to erase everything";
+      setTimeout(function(){ if(wipe.dataset.armed){ delete wipe.dataset.armed; wipe.textContent = "Start again from scratch"; } }, 4000);
+    }
+  };
+  acts.appendChild(wipe);
+  c5.appendChild(acts);
+  v.appendChild(c5);
+}
+
+/* ---- GitHub sync controls (Setup > Your data) ---- */
+function ghField(label, id, value, placeholder, type){
+  var f = el("div","field");
+  f.appendChild(el("label", null, label));
+  var i = document.createElement("input");
+  i.type = type || "text";
+  i.id = id;
+  i.value = value || "";
+  i.placeholder = placeholder || "";
+  i.autocapitalize = "off"; i.autocorrect = "off"; i.spellcheck = false;
+  f.appendChild(i);
+  return f;
+}
+
+function ghCard(){
+  var box = el("div");
+  box.style.cssText = "margin-top:14px;padding-top:14px;border-top:1px solid var(--line)";
+  box.appendChild(el("h3","sect","Sync across devices"));
+
+  if(sync.cfg){
+    var who = el("p","hint");
+    who.innerHTML = "Saving to <b>" + sync.cfg.owner + "/" + sync.cfg.repo +
+      "</b> \u2192 <b>" + sync.cfg.path + "</b> on <b>" + sync.cfg.branch + "</b>.";
+    box.appendChild(who);
+
+    var row = el("div","stack"); row.style.marginTop = "10px";
+    var now = el("button","btn full","Sync now");
+    now.onclick = ghSyncNow;
+    row.appendChild(now);
+    var off = el("button","btn ghost full","Disconnect this device");
+    off.onclick = function(){
+      if(off.dataset.armed){ ghDisconnect(); }
+      else {
+        off.dataset.armed = "1";
+        off.textContent = "Tap again \u2014 removes the token from this browser";
+        setTimeout(function(){ if(off.dataset.armed){ delete off.dataset.armed; off.textContent = "Disconnect this device"; } }, 4000);
+      }
+    };
+    row.appendChild(off);
+    box.appendChild(row);
+    return box;
+  }
+
+  var intro = el("p","hint");
+  intro.innerHTML = "Keep your history in a <b>private</b> GitHub repo of your own. " +
+    "Create a fine-grained token with <b>Contents: Read and write</b> on that one repo, then paste it here. " +
+    "It is stored in this browser only and is sent to nobody but github.com.";
+  box.appendChild(intro);
+
+  var link = document.createElement("a");
+  link.href = "https://github.com/settings/personal-access-tokens/new";
+  link.target = "_blank"; link.rel = "noopener noreferrer";
+  link.textContent = "Create a token on GitHub \u2192";
+  link.style.cssText = "display:inline-block;margin-top:8px;font-size:13px;font-weight:600;color:var(--brand)";
+  box.appendChild(link);
+
+  var form = el("div","stack"); form.style.marginTop = "12px";
+  form.appendChild(ghField("Repo (owner/name)", "gh-repo", "", "biancabodo/left-for-today-data"));
+  form.appendChild(ghField("File in the repo", "gh-path", "store.json", "store.json"));
+  form.appendChild(ghField("Branch", "gh-branch", "main", "main"));
+  form.appendChild(ghField("Token", "gh-token", "", "github_pat_\u2026", "password"));
+
+  var go = el("button","btn primary full","Connect");
+  go.onclick = function(){
+    var repo = (document.getElementById("gh-repo").value || "").trim().replace(/^https?:\/\/github\.com\//i,"").replace(/\.git$/,"").replace(/\/+$/,"");
+    var parts = repo.split("/");
+    var token = (document.getElementById("gh-token").value || "").trim();
+    if(parts.length !== 2 || !parts[0] || !parts[1]){ toast("Repo should look like owner/name"); return; }
+    if(!token){ toast("Paste your token first"); return; }
+    go.disabled = true; go.textContent = "Connecting\u2026";
+    ghConnect({
+      owner: parts[0],
+      repo: parts[1],
+      path: ((document.getElementById("gh-path").value || "store.json").trim().replace(/^\/+/,"")) || "store.json",
+      branch: (document.getElementById("gh-branch").value || "main").trim() || "main",
+      token: token
+    });
+  };
+  form.appendChild(go);
+  box.appendChild(form);
+  return box;
+}
+
+function idLine(id, a, bv, total){
+  var l = line(a, bv, total); l.id = id; return l;
+}
+function refreshSetupNumbers(){
+  var b = budget(), s = state.setup;
+  var set = function(id, txt){
+    var e = document.getElementById(id);
+    if(e && e.lastChild) e.lastChild.textContent = txt;
+  };
+  var bt = document.getElementById("bills-total");
+  if(bt) bt.textContent = money(billsTotal());
+  set("sum-in", money(+s.income||0));
+  set("sum-bills", "−" + money(billsTotal()));
+  set("sum-sav", "−" + money(+s.savings||0));
+  set("sum-spend", money(b.spendable));
+  var note = document.getElementById("sum-note");
+  if(note) note.innerHTML = "That's about <b>" + money(b.base) + " a day</b> across a " + b.p.days +
+    "-day cycle. The number on the front adjusts as you go.";
+}
+
+function ordinal(n){
+  if(n>3 && n<21) return "th";
+  return ["th","st","nd","rd"][n%10] || "th";
+}
+function numField(label, key, val, hint){
+  var f = el("div","field");
+  f.appendChild(el("label", null, label));
+  var i = document.createElement("input");
+  i.type = "number"; i.inputMode = "decimal"; i.step = "0.01";
+  i.value = (val === 0 || val === undefined || val === null) ? "" : val;
+  i.placeholder = "0";
+  i.oninput = function(){ state.setup[key] = parseFloat(i.value) || 0; save(); refreshSetupNumbers(); };
+  f.appendChild(i);
+  if(hint) f.appendChild(el("div","hint", hint));
+  return f;
+}
+
+/* ============================ add sheet ============================ */
+function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+
+function openAdd(kind){
+  pendingRows = []; pendingImg = null;
+  document.getElementById("capture").value = "";
+  document.getElementById("shot-status").textContent = "Photo library or camera";
+  document.getElementById("bigflag-slot").innerHTML = "";
+  setKind(kind || "out");
+  document.getElementById("sheet-add").classList.add("open");
+  document.body.style.overflow = "hidden";
+  setTimeout(function(){ document.getElementById("capture").focus(); }, 60);
+}
+var IN_PLACEHOLDER = "Type or paste, one per line:\nvinted 24\nasos refund 39.99\n\u00a350 mum";
+var OUT_PLACEHOLDER = "Type or paste, one per line:\nzara 68\n\u00a34.20 pret\ndeliveroo 23.50";
+
+function setKind(k){
+  addKind = k;
+  pendingRows = [];
+  Array.prototype.forEach.call(document.querySelectorAll(".segbtn"), function(b){
+    b.setAttribute("aria-selected", String(b.dataset.kind === k));
+  });
+  var isIn = k === "in";
+  document.getElementById("add-title").textContent = isIn ? "What came in?" : "What did you spend?";
+  var cap = document.getElementById("capture");
+  cap.placeholder = isIn ? IN_PLACEHOLDER : OUT_PLACEHOLDER;
+  cap.value = "";
+  document.getElementById("add-save").textContent = isIn ? "Add money in" : "Add to today";
+  document.getElementById("shot-btn").textContent = isIn ? "Add a photo" : "Add screenshot";
+  document.getElementById("bigflag-slot").innerHTML = "";
+  renderParsed();
+}
+
+function closeAdd(){
+  document.getElementById("sheet-add").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function renderParsed(){
+  var box = document.getElementById("parsed");
+  box.innerHTML = "";
+  pendingRows.forEach(function(r, idx){
+    var row = el("div","prow");
+    var a = document.createElement("input");
+    a.type = "number"; a.step = "0.01"; a.inputMode = "decimal";
+    a.className = "pamt"; a.value = r.amount.toFixed(2);
+    a.setAttribute("aria-label","Amount");
+    a.oninput = function(){ r.amount = parseFloat(a.value)||0; flagBig(); };
+    var m = document.createElement("input");
+    m.type = "text"; m.className = "pmer"; m.value = r.merchant;
+    m.setAttribute("aria-label", addKind === "in" ? "Where from" : "What for");
+    m.oninput = function(){ r.merchant = m.value; };
+    var s = document.createElement("select");
+    if(addKind === "in"){
+      row.classList.add("inflow");
+      s.setAttribute("aria-label","Where it goes");
+      [["spend","To spending"],["save","To savings"]].forEach(function(o2){
+        var o = document.createElement("option");
+        o.value = o2[0]; o.textContent = o2[1];
+        if(o2[0] === r.dest) o.selected = true;
+        s.appendChild(o);
+      });
+      s.onchange = function(){ r.dest = s.value; flagBig(); };
+    } else {
+      s.setAttribute("aria-label","Category");
+      CATS.forEach(function(c){
+        var o = document.createElement("option");
+        o.value = c.id; o.textContent = c.name;
+        if(c.id === r.category) o.selected = true;
+        s.appendChild(o);
+      });
+      s.onchange = function(){ r.category = s.value; };
+    }
+    var d = el("button","drop","×");
+    d.setAttribute("aria-label","Remove line");
+    d.onclick = function(){ pendingRows.splice(idx,1); renderParsed(); flagBig(); };
+    row.appendChild(a); row.appendChild(m); row.appendChild(s); row.appendChild(d);
+    box.appendChild(row);
+  });
+  if(pendingImg){
+    var pr = el("div","prow");
+    var im = document.createElement("img");
+    im.src = pendingImg; im.alt = "";
+    im.style.cssText = "width:34px;height:34px;object-fit:cover;border-radius:7px;border:1px solid var(--line)";
+    pr.appendChild(im);
+    pr.appendChild(el("div","who","Screenshot attached to these"));
+    var rm = el("button","drop","×");
+    rm.onclick = function(){ pendingImg = null; renderParsed(); };
+    pr.appendChild(rm);
+    box.appendChild(pr);
+  }
+}
+
+function flagBig(){
+  var slot = document.getElementById("bigflag-slot");
+  slot.innerHTML = "";
+  if(addKind === "in") return flagIn(slot);
+  var th = +state.setup.threshold || 0;
+  if(th <= 0) return;
+  var big = pendingRows.filter(function(r){ return r.amount >= th; });
+  if(!big.length) return;
+  var f = el("div","bigflag");
+  f.appendChild(el("div", null, big.length === 1
+    ? "That's a big one — " + money(big[0].amount) + " on " + big[0].merchant + "."
+    : big.length + " of these are over " + money0(th) + "."));
+  var b = el("button","btn full","Park it for 24 hours instead");
+  b.style.marginTop = "9px";
+  b.onclick = function(){
+    big.forEach(function(r){
+      state.pauses.push({ id: uid(), what: r.merchant, amount: r.amount,
+        created: Date.now(), status: "waiting" });
+      var i = pendingRows.indexOf(r);
+      if(i > -1) pendingRows.splice(i,1);
+    });
+    save(); renderParsed(); flagBig();
+    toast("On hold until tomorrow");
+    if(!pendingRows.length){ closeAdd(); render(); }
+  };
+  f.appendChild(b);
+  slot.appendChild(f);
+}
+
+/* Money in defaults to the spending pot (that's what a refund is), but the
+   nudge is one tap away from sending it to the goal instead. */
+function flagIn(slot){
+  var goal = state.setup.goalName || "savings";
+  var toSpend = pendingRows.filter(function(r){ return r.dest !== "save"; });
+  if(!toSpend.length) return;
+  var total = toSpend.reduce(function(a,r){ return a + r.amount; }, 0);
+  if(!(total > 0)) return;
+  var f = el("div","bigflag");
+  f.appendChild(el("div", null, money(total) + " will go into what you can spend, raising today's number."));
+  var b = el("button","btn full","Put it towards " + goal + " instead");
+  b.style.marginTop = "9px";
+  b.onclick = function(){
+    pendingRows.forEach(function(r){ r.dest = "save"; });
+    renderParsed(); flagBig();
+  };
+  f.appendChild(b);
+  slot.appendChild(f);
+}
+
+function commitCapture(){
+  var txt = document.getElementById("capture").value;
+  var fresh = parseEntries(txt);
+  if(addKind === "in") fresh.forEach(function(r){ r.dest = "spend"; });
+  if(fresh.length){
+    pendingRows = pendingRows.concat(fresh);
+    document.getElementById("capture").value = "";
+  }
+  renderParsed(); flagBig();
+  return fresh.length;
+}
+
+/* image downscale */
+function shrink(file, cb){
+  var fr = new FileReader();
+  fr.onload = function(){
+    var img = new Image();
+    img.onload = function(){
+      var max = 460;
+      var sc = Math.min(1, max/Math.max(img.width, img.height));
+      var cv = document.createElement("canvas");
+      cv.width = Math.round(img.width*sc); cv.height = Math.round(img.height*sc);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      try { cb(cv.toDataURL("image/jpeg", 0.62)); } catch(e){ cb(null); }
+    };
+    img.onerror = function(){ cb(null); };
+    img.src = fr.result;
+  };
+  fr.onerror = function(){ cb(null); };
+  fr.readAsDataURL(file);
+}
+
+/* ============================ pause sheet ============================ */
+function openPause(){
+  document.getElementById("p-what").value = "";
+  document.getElementById("p-amt").value = "";
+  document.getElementById("sheet-pause").classList.add("open");
+  document.body.style.overflow = "hidden";
+  setTimeout(function(){ document.getElementById("p-what").focus(); }, 60);
+}
+function closePause(){
+  document.getElementById("sheet-pause").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+/* ============================ backup ============================ */
+function backupBlobText(){
+  return JSON.stringify({ app:"left-for-today", exported:new Date().toISOString(), state:state }, null, 2);
+}
+function doExport(){
+  var name = "left-for-today-" + todayKey() + ".json";
+  var text = backupBlobText();
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("downloads").then(function(dl){
+      if(!dl){ fallbackExport(name, text); return; }
+      dl.save({ filename:name, data:text }).then(function(){ toast("Backed up"); })
+        .catch(function(){ toast("Backup cancelled"); });
+    }).catch(function(){ fallbackExport(name, text); });
+  } else {
+    fallbackExport(name, text);
+  }
+}
+function fallbackExport(name, text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      toast("Copied — paste it somewhere safe");
+    }).catch(function(){ toast("Couldn't back up here"); });
+  } else {
+    toast("Couldn't back up here");
+  }
+}
+/* Clipboard transfer — works with no capabilities at all, which makes it the
+   one route that always exists between two copies of the app. */
+function copyOut(btn){
+  var text = backupBlobText();
+  var done = function(){
+    if(btn){ btn.textContent = "Copied \u2014 now paste it into the other copy"; 
+      setTimeout(function(){ btn.textContent = "Copy my data"; }, 4000); }
+    toast("Copied " + entryCount(state) + " entries");
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ legacyCopy(text, done); });
+  } else {
+    legacyCopy(text, done);
+  }
+}
+function legacyCopy(text, done){
+  var ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+  document.body.appendChild(ta);
+  ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch(e){}
+  document.body.removeChild(ta);
+  if(ok) done(); else toast("Couldn't copy — use Back up to a file");
+}
+
+function pasteIn(text){
+  if(!text || !text.trim()){ toast("Nothing pasted yet"); return; }
+  try {
+    var pj = JSON.parse(text);
+    var incoming = normalise(pj && pj.state ? pj.state : pj);
+    if(!incoming.setup) throw new Error("bad");
+    var before = entryCount(state);
+    state = merge(state, incoming);   // union, so neither side loses anything
+    save(); render(); window.scrollTo(0,0);
+    toast("Restored — " + entryCount(state) + " entries (was " + before + ")");
+  } catch(e){
+    toast("That text didn't look like a backup");
+  }
+}
+
+function doImport(file){
+  if(!file) return;
+  var fr = new FileReader();
+  fr.onload = function(){
+    try {
+      var p = JSON.parse(fr.result);
+      var s = p && p.state ? p.state : p;
+      if(!s || !s.setup) throw new Error("bad");
+      state = merge(state, normalise(s));
+      save(); render(); window.scrollTo(0,0);
+      toast("Restored — " + entryCount(state) + " entries");
+    } catch(e){ toast("That file didn't look right"); }
+  };
+  fr.readAsText(file);
+}
+
+/* ============================ wiring ============================ */
+Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function(b){
+  b.onclick = function(){ tab = b.dataset.tab; calSel = null; render(); window.scrollTo(0,0); };
+});
+
+document.getElementById("add-close").onclick = closeAdd;
+document.getElementById("pause-close").onclick = closePause;
+
+document.getElementById("capture").addEventListener("input", function(){
+  var v = this.value;
+  if(/\n$/.test(v)) commitCapture();
+});
+document.getElementById("capture").addEventListener("blur", function(){
+  if(this.value.trim()) commitCapture();
+});
+
+document.getElementById("shot-btn").onclick = function(){
+  document.getElementById("shot-input").click();
+};
+document.getElementById("shot-input").onchange = function(){
+  var f = this.files && this.files[0];
+  if(!f) return;
+  document.getElementById("shot-status").textContent = "Attaching…";
+  shrink(f, function(url){
+    pendingImg = url;
+    document.getElementById("shot-status").textContent = url ? "Attached" : "Couldn't read that image";
+    renderParsed();
+  });
+  this.value = "";
+};
+
+document.getElementById("capture").addEventListener("paste", function(e){
+  var items = e.clipboardData && e.clipboardData.items;
+  if(!items) return;
+  for(var i=0;i<items.length;i++){
+    if(items[i].type && items[i].type.indexOf("image") === 0){
+      var f = items[i].getAsFile();
+      if(f){ e.preventDefault(); shrink(f, function(url){ pendingImg = url; renderParsed(); }); }
+    }
+  }
+});
+
+document.getElementById("add-save").onclick = function(){
+  commitCapture();
+  if(!pendingRows.length){ toast("Nothing to add yet"); return; }
+  var total = 0, saved = 0;
+  pendingRows.forEach(function(r){
+    if(!(r.amount > 0)) return;
+    total += r.amount;
+    var rec = { id: uid(), day: todayKey(), amount: r.amount, ts: Date.now() };
+    if(pendingImg) rec.img = pendingImg;
+    if(addKind === "in"){
+      rec.source = r.merchant || "Money in";
+      rec.dest = r.dest === "save" ? "save" : "spend";
+      if(rec.dest === "save") saved += r.amount;
+      state.inflows.push(rec);
+    } else {
+      rec.merchant = r.merchant || "Unlabelled";
+      rec.category = r.category;
+      state.spends.push(rec);
+    }
+  });
+  var wasIn = addKind === "in";
+  save();
+  closeAdd();
+  tab = "today"; render(); window.scrollTo(0,0);
+  toast(wasIn
+    ? (saved > 0 ? money(saved) + " to " + (state.setup.goalName || "savings") : money(total) + " in")
+    : "Logged " + money(total));
+};
+
+Array.prototype.forEach.call(document.querySelectorAll(".segbtn"), function(b){
+  b.onclick = function(){ setKind(b.dataset.kind); document.getElementById("capture").focus(); };
+});
+
+document.getElementById("pause-save").onclick = function(){
+  var what = document.getElementById("p-what").value.trim();
+  var amt = parseFloat(document.getElementById("p-amt").value);
+  if(!what){ toast("What is it?"); return; }
+  if(!(amt > 0)){ toast("How much?"); return; }
+  state.pauses.push({ id: uid(), what: what, amount: Math.round(amt*100)/100,
+                      created: Date.now(), status: "waiting" });
+  save(); closePause(); tab = "today"; render(); window.scrollTo(0,0);
+  toast("Parked — decide tomorrow");
+};
+
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape"){ closeAdd(); closePause(); }
+});
+
+load();
+render();
+initSync();
+
+// keep countdowns and the day boundary honest
+var lastDay = todayKey();
+setInterval(function(){
+  if(todayKey() !== lastDay){ lastDay = todayKey(); render(); return; }
+  if(tab === "today" && state.pauses.some(function(p){ return p.status === "waiting"; })) renderToday();
+}, 60000);
+
+})();
+</script>
+
+</body></html>
