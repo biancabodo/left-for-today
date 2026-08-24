@@ -20,6 +20,11 @@ Entries are kept in your browser's `localStorage` under `leftfortoday.v1`, plus
 a `lastgood` spare copy so a half-cleared browser can't leave you staring at an
 empty app. Nothing in this repo contains your spending.
 
+Tap any row in Today or History to edit it — amount, what it was, category or
+destination, date and currency are all changeable, with a two-tap delete. The
+entry keeps its id, so an edit syncs like any other change instead of forking the
+copy on another device.
+
 ### Syncing across devices
 
 Setup → *Your data* → *Sync across devices* connects the app to a **private**
@@ -35,6 +40,28 @@ data repo and revoke it if the device is lost.
 
 Without a token the app still works — history just stays on that one device, and
 *Copy my data* / *Back up to a file* are the way out.
+
+## Currencies
+
+Setup → **Your currency** sets what everything is displayed and stored in. Changing
+it later asks whether to convert the figures you already have at today's rate, or
+to relabel and leave the numbers alone.
+
+When you're travelling, the add sheet has its own currency picker. Log `mega image
+250` in RON and it stores the entry in your base currency, keeping what you actually
+paid alongside it — the log row reads *Groceries · RON 250.00*.
+
+Rates come from two keyless, CORS-open sources:
+
+- [Frankfurter](https://frankfurter.dev) for the ~30 currencies the ECB publishes
+  daily. It answers for a **past** date, so a backdated entry converts at the rate
+  that applied on the day it happened.
+- [open.er-api.com](https://open.er-api.com) for everything else, which only knows
+  today's rate. The app says which one it used.
+
+The rate is always an editable field. If the network is down, or your bank charged
+something different, type the real rate and the entry stores correctly. Fetched
+rates are cached in `localStorage` so the same day and pair aren't looked up twice.
 
 ## Editing it
 

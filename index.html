@@ -157,6 +157,7 @@ header.hero{padding:26px 0 10px;text-align:center}
 }
 #shell.is-over .bignum{color:var(--over)}
 .bignum .cur{font-size:.42em;line-height:1;margin-top:.28em;font-weight:300}
+.bignum .cur.wordy{font-size:.26em;margin-top:.62em;letter-spacing:.02em;margin-right:.14em}
 .bignum .pence{font-size:.34em;line-height:1;margin-top:.42em;letter-spacing:0;color:var(--ink-soft)}
 .bignum .minus{font-size:.5em;line-height:1;margin-top:.34em}
 .verdict{margin-top:12px;font-size:15px;color:var(--ink-soft);text-wrap:balance;padding:0 8px}
@@ -213,6 +214,9 @@ header.hero{padding:26px 0 10px;text-align:center}
 .logitem .amt{font-family:"DM Mono",monospace;font-size:14.5px;font-variant-numeric:tabular-nums}
 .logitem img.thumb{width:30px;height:30px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
 .logitem .del{border:none;background:none;color:var(--ink-faint);font-size:17px;padding:2px 4px;line-height:1}
+.logitem.tappable{cursor:pointer;margin:0 -6px;padding-left:6px;padding-right:6px;border-radius:9px}
+.logitem.tappable:active{background:var(--surface-2)}
+@media (hover:hover){.logitem.tappable:hover{background:var(--surface-2)}}
 .empty{color:var(--ink-faint);font-size:13.5px;padding:6px 0}
 
 /* ---------- goal ---------- */
@@ -337,6 +341,22 @@ textarea#capture::placeholder{color:var(--ink-faint)}
 .daterow .today[hidden]{display:none}
 .daterow.past{border-color:var(--warn);background:var(--warn-tint)}
 .daterow.past label{color:var(--warn)}
+.daterow select{
+  flex:1;min-width:0;background:transparent;border:none;font-size:14px;font-weight:600;color:var(--ink);
+}
+.fxrow{
+  margin:-6px 0 12px;padding:10px 12px;
+  background:var(--surface-2);border:1px solid var(--line-soft);border-radius:12px;
+}
+.fxline{display:flex;align-items:center;gap:8px}
+.fxline label{font-size:13px;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+.fxline input{
+  flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:7px 9px;font-family:"DM Mono",ui-monospace,monospace;font-size:14px;
+}
+.fxline span{font-family:"DM Mono",ui-monospace,monospace;font-size:13px;color:var(--ink-soft)}
+.fxnote{margin-top:7px;font-size:12.5px;color:var(--ink-faint);line-height:1.4}
+.fxnote b{color:var(--ink)}
 .prow.inflow{border-color:var(--brand)}
 .logitem .amt.plus{color:var(--brand);font-weight:500}
 .parsed{display:flex;flex-direction:column;gap:8px;margin-top:14px}
@@ -418,7 +438,19 @@ textarea#capture::placeholder{color:var(--ink-faint)}
       <input type="date" id="entry-date">
       <button type="button" class="today" id="entry-date-today" hidden>Back to today</button>
     </div>
-    <textarea id="capture" placeholder="Type or paste, one per line:&#10;zara 68&#10;£4.20 pret&#10;deliveroo 23.50"></textarea>
+    <div class="daterow" id="curow">
+      <label for="entry-cur">Currency</label>
+      <select id="entry-cur"></select>
+    </div>
+    <div class="fxrow" id="fxrow" hidden>
+      <div class="fxline">
+        <label for="entry-rate">1 <span id="fx-from">—</span> =</label>
+        <input type="number" id="entry-rate" step="any" inputmode="decimal">
+        <span id="fx-to">—</span>
+      </div>
+      <div class="fxnote" id="fx-note"></div>
+    </div>
+    <textarea id="capture" placeholder="Type or paste, one per line:&#10;zara 68&#10;4.20 pret&#10;deliveroo 23.50"></textarea>
     <div class="row" style="margin-top:10px">
       <button class="btn" id="shot-btn">Add screenshot</button>
       <span class="hint" style="flex:1" id="shot-status">Photo library or camera</span>
@@ -433,6 +465,34 @@ textarea#capture::placeholder{color:var(--ink-faint)}
     </p>
     <div class="sheetfoot">
       <button class="btn primary full" id="add-save">Add to today</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet-edit" role="dialog" aria-label="Edit entry">
+  <div class="inner">
+    <header>
+      <h3 id="edit-title">Edit</h3>
+      <button class="btn ghost" id="edit-close">Close</button>
+    </header>
+    <div class="stack">
+      <div class="field"><label for="e-what" id="e-what-label">What for</label><input id="e-what" type="text"></div>
+      <div class="field" id="e-cat-wrap"><label for="e-cat">Category</label><select id="e-cat"></select></div>
+      <div class="field"><label for="e-amt" id="e-amt-label">Amount</label><input id="e-amt" type="number" inputmode="decimal" step="0.01"></div>
+      <div class="field"><label for="e-cur">Currency</label><select id="e-cur"></select></div>
+      <div class="fxrow" id="e-fxrow" hidden>
+        <div class="fxline">
+          <label for="e-rate">1 <span id="e-fx-from">—</span> =</label>
+          <input type="number" id="e-rate" step="any" inputmode="decimal">
+          <span id="e-fx-to">—</span>
+        </div>
+        <div class="fxnote" id="e-fx-note"></div>
+      </div>
+      <div class="field"><label for="e-date">Date</label><input id="e-date" type="date"></div>
+      <button class="btn ghost full" id="edit-delete" style="color:var(--over);border-color:var(--over)">Delete this entry</button>
+    </div>
+    <div class="sheetfoot">
+      <button class="btn primary full" id="edit-save">Save changes</button>
     </div>
   </div>
 </div>
@@ -497,7 +557,7 @@ function blankState(){
   return {
     v:1,
     setup:{ done:false, income:0, bills:[], savings:0, payday:1,
-            goalName:"", goalTarget:0, threshold:50, startedOn:todayKey() },
+            goalName:"", goalTarget:0, threshold:50, startedOn:todayKey(), currency:"GBP" },
     spends:[], inflows:[], pauses:[], banked:0, skipped:0, seen:{}, updatedAt:0
   };
 }
@@ -505,6 +565,7 @@ function blankState(){
 function normalise(p){
   var s = Object.assign(blankState(), p || {});
   s.setup = Object.assign(blankState().setup, (p && p.setup) || {});
+  if(!CUR_NAMES[s.setup.currency]) s.setup.currency = "GBP";
   s.spends = Array.isArray(s.spends) ? s.spends : [];
   s.inflows = Array.isArray(s.inflows) ? s.inflows : [];
   s.pauses = Array.isArray(s.pauses) ? s.pauses : [];
@@ -814,6 +875,75 @@ window.addEventListener("visibilitychange", function(){
   if(document.visibilityState === "hidden" && sync.pending){ clearTimeout(sync.timer); pushSync(); }
 });
 
+/* ============================ exchange rates ============================
+   Two sources, no keys, both CORS-open. Frankfurter carries the ECB daily
+   rates, which means it can answer for a *past* date — the right rate for a
+   backdated entry. Anything the ECB doesn't publish falls back to a
+   today-only source, and the rate stays editable either way, so a bad network
+   or an odd currency never blocks logging.                                */
+var FX_KEY = STORE + ".fx";
+var fxCache = null;
+
+function fxLoad(){
+  if(fxCache) return fxCache;
+  try { fxCache = JSON.parse(localStorage.getItem(FX_KEY) || "{}"); }
+  catch(e){ fxCache = {}; }
+  if(!fxCache || typeof fxCache !== "object") fxCache = {};
+  return fxCache;
+}
+function fxRemember(k, val){
+  var c = fxLoad();
+  c[k] = val;
+  var keys = Object.keys(c);
+  if(keys.length > 400){ keys.sort().slice(0, keys.length - 400).forEach(function(x){ delete c[x]; }); }
+  try { localStorage.setItem(FX_KEY, JSON.stringify(c)); } catch(e){}
+}
+function fxCached(from, to, day){
+  return fxLoad()[day + ":" + from + ":" + to] || null;
+}
+
+function fetchRate(from, to, day){
+  if(from === to) return Promise.resolve({ rate:1, src:"same", on:day });
+  var key = day + ":" + from + ":" + to;
+  var hit = fxCached(from, to, day);
+  if(hit) return Promise.resolve(hit);
+
+  var when = day > todayKey() ? todayKey() : day;
+  var ecb = ECB_CURS.indexOf(from) > -1 && ECB_CURS.indexOf(to) > -1;
+
+  var first = ecb
+    ? fetch("https://api.frankfurter.dev/v1/" + when + "?base=" + from + "&symbols=" + to)
+        .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then(function(j){
+          var v = j && j.rates && j.rates[to];
+          if(!(v > 0)) throw new Error("no rate");
+          return { rate:v, src:"ECB", on:(j.date || when) };
+        })
+    : Promise.reject(new Error("not an ECB currency"));
+
+  return first.catch(function(){
+    return fetch("https://open.er-api.com/v6/latest/" + from)
+      .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function(j){
+        var v = j && j.rates && j.rates[to];
+        if(!(v > 0)) throw new Error("no rate");
+        // this source only knows today, so say so rather than implying the day
+        return { rate:v, src:"today's rate", on:todayKey() };
+      });
+  }).then(function(res){
+    fxRemember(key, res);
+    return res;
+  });
+}
+
+/* how many decimals a rate needs to stay meaningful — 0.16 for RON→GBP,
+   but 0.000034 for IDR→GBP */
+function rateStr(r){
+  if(!(r > 0)) return "";
+  var dp = r >= 100 ? 2 : r >= 1 ? 4 : r >= 0.01 ? 5 : r >= 0.0001 ? 7 : 9;
+  return String(+r.toFixed(dp));
+}
+
 /* ============================ dates ============================ */
 function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
 function keyOf(d){
@@ -848,14 +978,61 @@ function period(){
 }
 
 /* ============================ money ============================ */
-function money(n){
-  var neg = n < 0; n = Math.abs(n);
-  return (neg?"−£":"£") + n.toLocaleString("en-GB",{minimumFractionDigits:2, maximumFractionDigits:2});
+/* Currencies. The first block is everything the ECB publishes daily, which is
+   what we can get a rate for on a *past* date. The second block still works —
+   it just converts at today's rate, whatever day the entry is for. */
+var ECB_CURS = ["AUD","BRL","CAD","CHF","CNY","CZK","DKK","EUR","GBP","HKD","HUF","IDR","ILS",
+                "INR","ISK","JPY","KRW","MXN","MYR","NOK","NZD","PHP","PLN","RON","SEK","SGD",
+                "THB","TRY","USD","ZAR"];
+var CUR_NAMES = {
+  AED:"UAE dirham", ALL:"Albanian lek", ARS:"Argentine peso", AUD:"Australian dollar",
+  BGN:"Bulgarian lev", BRL:"Brazilian real", CAD:"Canadian dollar", CHF:"Swiss franc",
+  CLP:"Chilean peso", CNY:"Chinese yuan", COP:"Colombian peso", CZK:"Czech koruna",
+  DKK:"Danish krone", EGP:"Egyptian pound", EUR:"Euro", GBP:"British pound",
+  GEL:"Georgian lari", HKD:"Hong Kong dollar", HUF:"Hungarian forint", IDR:"Indonesian rupiah",
+  ILS:"Israeli shekel", INR:"Indian rupee", ISK:"Icelandic krona", JPY:"Japanese yen",
+  KES:"Kenyan shilling", KRW:"South Korean won", MAD:"Moroccan dirham", MDL:"Moldovan leu",
+  MXN:"Mexican peso", MYR:"Malaysian ringgit", NGN:"Nigerian naira", NOK:"Norwegian krone",
+  NZD:"New Zealand dollar", PEN:"Peruvian sol", PHP:"Philippine peso", PLN:"Polish zloty",
+  QAR:"Qatari riyal", RON:"Romanian leu", RSD:"Serbian dinar", SAR:"Saudi riyal",
+  SEK:"Swedish krona", SGD:"Singapore dollar", THB:"Thai baht", TRY:"Turkish lira",
+  TWD:"Taiwan dollar", UAH:"Ukrainian hryvnia", USD:"US dollar", VND:"Vietnamese dong",
+  ZAR:"South African rand"
+};
+var CUR_LIST = Object.keys(CUR_NAMES).sort();
+
+function baseCur(){
+  var c = state && state.setup && state.setup.currency;
+  return (c && CUR_NAMES[c]) ? c : "GBP";
 }
-function money0(n){
-  var neg = n < 0; n = Math.abs(n);
-  return (neg?"−£":"£") + Math.round(n).toLocaleString("en-GB");
+var _curCache = {};
+function curInfo(code){
+  if(_curCache[code]) return _curCache[code];
+  var info = { symbol: code, decimals: 2 };
+  try {
+    var nf = new Intl.NumberFormat("en-GB", { style:"currency", currency: code });
+    info.decimals = nf.resolvedOptions().maximumFractionDigits;
+    nf.formatToParts(1).forEach(function(pt){ if(pt.type === "currency") info.symbol = pt.value; });
+  } catch(e){}
+  _curCache[code] = info;
+  return info;
 }
+function curSymbol(code){ return curInfo(code || baseCur()).symbol; }
+
+function fmtAmount(n, code, dp){
+  var info = curInfo(code);
+  var d = dp === undefined ? info.decimals : dp;
+  var neg = n < 0; n = Math.abs(n);
+  var body = n.toLocaleString("en-GB", { minimumFractionDigits:d, maximumFractionDigits:d });
+  // a symbol that is really a code ("RON") reads better with a space after it
+  var sym = info.symbol;
+  var joined = /^[A-Z]{2,3}$/.test(sym) ? sym + "\u00a0" + body : sym + body;
+  return (neg ? "\u2212" : "") + joined;
+}
+function money(n){ return fmtAmount(n, baseCur()); }
+function money0(n){ return fmtAmount(n, baseCur(), 0); }
+/* what a foreign-currency entry was originally worth, e.g. "RON 250.00" */
+function origMoney(fx){ return fmtAmount(fx.amount, fx.cur); }
 
 function billsTotal(){
   return (state.setup.bills||[]).reduce(function(a,b){ return a + (+b.amount||0); }, 0);
@@ -1006,19 +1183,26 @@ function categorise(text){
   return "other";
 }
 
+/* "ron 250" should lose the "ron", but "all bar one" must keep its "all" —
+   so codes that are also English words are left alone. */
+var CODE_WORDS = { ALL:1, GEL:1 };
+var CODE_RE = new RegExp("\\b(" +
+  CUR_LIST.filter(function(c){ return !CODE_WORDS[c]; }).join("|") + ")\\b", "gi");
+
 function parseEntries(text){
   var out = [];
   var chunks = String(text||"").split(/[\n;]+|,(?=\s*[^\d])/);
   chunks.forEach(function(raw){
     var line = raw.trim();
     if(!line) return;
-    var m = line.match(/(?:£|gbp\s*)?(\d{1,6}(?:[.,]\d{1,2})?)/i);
+    var m = line.match(/(?:[£$€¥₺₹₩฿₴₦₪]\s*)?(\d{1,9}(?:[.,]\d{1,2})?)/);
     if(!m) return;
     var amt = parseFloat(m[1].replace(",", "."));
     if(!isFinite(amt) || amt <= 0) return;
     var merch = line.replace(m[0], " ")
-                    .replace(/[£$€]/g,"")
-                    .replace(/\b(gbp|paid|spent|for|on|at|to|the)\b/gi," ")
+                    .replace(/[£$€¥₺₹₩฿₴₦₪]/g,"")
+                    .replace(CODE_RE," ")
+                    .replace(/\b(paid|spent|for|on|at|to|the)\b/gi," ")
                     .replace(/\s{2,}/g," ").trim();
     merch = merch.replace(/^[-–—•*.\s]+|[-–—•*.\s]+$/g,"");
     if(!merch) merch = "Unlabelled";
@@ -1238,14 +1422,21 @@ function renderToday(){
 }
 
 function bigNumber(n, over){
-  var cents = Math.round(n * 100);
-  var whole = Math.floor(cents / 100);
-  var pence = cents % 100;
+  var info = curInfo(baseCur());
   var wrap = el("div","bignum");
   if(over) wrap.appendChild(el("span","minus","−"));
-  wrap.appendChild(el("span","cur","£"));
-  wrap.appendChild(el("span","whole num", whole.toLocaleString("en-GB")));
-  wrap.appendChild(el("span","pence num", "." + (pence<10?"0":"") + pence));
+  var cur = el("span","cur", info.symbol);
+  if(info.symbol.length > 2) cur.classList.add("wordy");
+  wrap.appendChild(cur);
+  if(info.decimals === 0){
+    wrap.appendChild(el("span","whole num", Math.round(n).toLocaleString("en-GB")));
+  } else {
+    var cents = Math.round(n * 100);
+    var whole = Math.floor(cents / 100);
+    var pence = cents % 100;
+    wrap.appendChild(el("span","whole num", whole.toLocaleString("en-GB")));
+    wrap.appendChild(el("span","pence num", "." + (pence<10?"0":"") + pence));
+  }
   wrap.setAttribute("role","img");
   wrap.setAttribute("aria-label", (over ? "Over by " : "Left to spend today: ") + money(n));
   return wrap;
@@ -1277,17 +1468,26 @@ function logRow(s){
   }
   var who = el("div","who");
   who.appendChild(el("div","m", s.merchant));
-  who.appendChild(el("div","c", CATMAP[s.category].name));
+  who.appendChild(el("div","c", subLabel(s)));
   r.appendChild(who);
   r.appendChild(el("div","amt num", money(s.amount)));
   var del = el("button","del","×");
   del.setAttribute("aria-label","Delete " + s.merchant);
-  del.onclick = function(){
+  del.onclick = function(e){
+    e.stopPropagation();
     state.spends = state.spends.filter(function(x){ return x.id !== s.id; });
     save(); render(); toast("Removed");
   };
   r.appendChild(del);
+  makeEditable(r, s, "spend");
   return r;
+}
+
+/* "Eating out" on its own, or "Eating out · RON 250.00" when it was logged abroad */
+function subLabel(s){
+  var base = s.category ? CATMAP[s.category].name : (s.dest === "save" ? "To savings" : "To spending");
+  // once you're back home in that currency, repeating it adds nothing
+  return (s.fx && s.fx.cur !== baseCur()) ? base + " · " + origMoney(s.fx) : base;
 }
 
 function inflowRow(f){
@@ -1302,18 +1502,19 @@ function inflowRow(f){
   }
   var who = el("div","who");
   who.appendChild(el("div","m", f.source || "Money in"));
-  who.appendChild(el("div","c", f.dest === "save"
-    ? "Into " + (state.setup.goalName || "savings")
-    : "Into what you can spend"));
+  var sub = f.dest === "save" ? "Into " + (state.setup.goalName || "savings") : "Into what you can spend";
+  who.appendChild(el("div","c", (f.fx && f.fx.cur !== baseCur()) ? sub + " · " + origMoney(f.fx) : sub));
   r.appendChild(who);
   r.appendChild(el("div","amt plus num", "+" + money(f.amount)));
   var del = el("button","del","×");
   del.setAttribute("aria-label","Delete " + (f.source || "money in"));
-  del.onclick = function(){
+  del.onclick = function(e){
+    e.stopPropagation();
     state.inflows = state.inflows.filter(function(x){ return x.id !== f.id; });
     save(); render(); toast("Removed");
   };
   r.appendChild(del);
+  makeEditable(r, f, "inflow");
   return r;
 }
 
@@ -1701,9 +1902,10 @@ function entryList(c){
       ir.appendChild(isw);
       var iwho = el("div","who");
       iwho.appendChild(el("div","m", f.source || "Money in"));
-      iwho.appendChild(el("div","c", f.dest === "save" ? "To savings" : "To spending"));
+      iwho.appendChild(el("div","c", subLabel(f)));
       ir.appendChild(iwho);
       ir.appendChild(el("div","amt plus num", "+" + money(f.amount)));
+      makeEditable(ir, f, "inflow");
       wrap.appendChild(ir);
     });
     (byDay[k]||[]).forEach(function(s){
@@ -1718,9 +1920,10 @@ function entryList(c){
       }
       var who = el("div","who");
       who.appendChild(el("div","m", s.merchant));
-      who.appendChild(el("div","c", CATMAP[s.category].name));
+      who.appendChild(el("div","c", subLabel(s)));
       r.appendChild(who);
       r.appendChild(el("div","amt num", money(s.amount)));
+      makeEditable(r, s, "spend");
       wrap.appendChild(r);
     });
   });
@@ -1760,6 +1963,7 @@ function renderSetup(){
 
   var c1 = el("div","card"); c1.style.marginTop = "10px";
   var st1 = el("div","stack");
+  st1.appendChild(currencyField());
   st1.appendChild(numField("Take-home pay a month", "income", s.income, "After tax, what actually lands"));
   st1.appendChild(numField("Straight into savings", "savings", s.savings, "Ring-fenced before anything else"));
   var pd = el("div","field");
@@ -2029,6 +2233,99 @@ function ghCard(){
   return box;
 }
 
+/* ---- base currency ---- */
+function currencyField(){
+  var f = el("div","field");
+  f.appendChild(el("label", null, "Your currency"));
+  var sel = document.createElement("select");
+  sel.id = "cur-select";
+  CUR_LIST.forEach(function(code){
+    var o = document.createElement("option");
+    o.value = code;
+    o.textContent = code + " — " + CUR_NAMES[code];
+    if(code === baseCur()) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.onchange = function(){ offerConvert(sel.value); };
+  f.appendChild(sel);
+  f.appendChild(el("div","hint","Everything is shown in this. You can still log a spend in another currency when you travel."));
+  var slot = el("div"); slot.id = "cur-convert";
+  f.appendChild(slot);
+  return f;
+}
+
+/* Changing this rewrites every number you can see, so ask first — and offer
+   the honest alternative, which is to relabel without touching the figures. */
+function offerConvert(to){
+  var from = baseCur();
+  var slot = document.getElementById("cur-convert");
+  if(to === from){ slot.innerHTML = ""; return; }
+  if(!hasFigures()){ applyCurrency(to, 1); return; }
+
+  slot.innerHTML = "";
+  var box = el("div","bigflag");
+  box.appendChild(el("div", null, "Working out the rate\u2026"));
+  slot.appendChild(box);
+
+  fetchRate(from, to, todayKey()).then(function(res){
+    box.innerHTML = "";
+    var p = el("div", null);
+    p.innerHTML = "Everything you've entered so far is in <b>" + from + "</b>. At <b>1 " + from +
+      " = " + rateStr(res.rate) + " " + to + "</b> I can convert it all \u2014 pay, fixed costs, " +
+      "goal and every entry \u2014 so the numbers keep their real value.";
+    box.appendChild(p);
+    var row = el("div","stack"); row.style.marginTop = "10px";
+    var go = el("button","btn primary full","Convert everything to " + to);
+    go.onclick = function(){ applyCurrency(to, res.rate); };
+    var keep = el("button","btn full","Just change the symbol");
+    keep.onclick = function(){ applyCurrency(to, 1); };
+    var no = el("button","btn ghost full","Cancel");
+    no.onclick = function(){ document.getElementById("cur-select").value = from; slot.innerHTML = ""; };
+    row.appendChild(go); row.appendChild(keep); row.appendChild(no);
+    box.appendChild(row);
+  }).catch(function(){
+    box.innerHTML = "";
+    box.appendChild(el("div", null, "Couldn't reach a rate just now, so the figures can't be converted. " +
+      "You can still switch the symbol and leave the numbers as they are."));
+    var row = el("div","stack"); row.style.marginTop = "10px";
+    var keep = el("button","btn full","Just change the symbol");
+    keep.onclick = function(){ applyCurrency(to, 1); };
+    var no = el("button","btn ghost full","Cancel");
+    no.onclick = function(){ document.getElementById("cur-select").value = baseCur(); document.getElementById("cur-convert").innerHTML = ""; };
+    row.appendChild(keep); row.appendChild(no);
+    box.appendChild(row);
+  });
+}
+
+function hasFigures(){
+  var s = state.setup;
+  return entryCount(state) > 0 || (+s.income||0) > 0 || (+s.savings||0) > 0 ||
+         (+s.goalTarget||0) > 0 || billsTotal() > 0;
+}
+
+function applyCurrency(to, rate){
+  var s = state.setup;
+  if(rate !== 1 && rate > 0){
+    var conv = function(n){ return Math.round((+n||0) * rate * 100) / 100; };
+    s.income = conv(s.income);
+    s.savings = conv(s.savings);
+    s.goalTarget = conv(s.goalTarget);
+    s.threshold = conv(s.threshold);
+    (s.bills||[]).forEach(function(b){ b.amount = conv(b.amount); });
+    state.banked = conv(state.banked);
+    ["spends","inflows","pauses"].forEach(function(k){
+      (state[k]||[]).forEach(function(x){
+        x.amount = conv(x.amount);
+        // a foreign-currency entry keeps what it really cost; only the rate moves
+        if(x.fx) x.fx.rate = x.fx.rate * rate;
+      });
+    });
+  }
+  s.currency = to;
+  save(); render(); window.scrollTo(0, 99999);
+  toast(rate === 1 ? "Now showing " + to : "Converted to " + to);
+}
+
 function idLine(id, a, bv, total){
   var l = line(a, bv, total); l.id = id; return l;
 }
@@ -2075,13 +2372,18 @@ function openAdd(kind){
   document.getElementById("shot-status").textContent = "Photo library or camera";
   document.getElementById("bigflag-slot").innerHTML = "";
   setEntryDate(todayKey());
+  setEntryCur(baseCur());
   setKind(kind || "out");
   document.getElementById("sheet-add").classList.add("open");
   document.body.style.overflow = "hidden";
   setTimeout(function(){ document.getElementById("capture").focus(); }, 60);
 }
-var IN_PLACEHOLDER = "Type or paste, one per line:\nvinted 24\nasos refund 39.99\n\u00a350 mum";
-var OUT_PLACEHOLDER = "Type or paste, one per line:\nzara 68\n\u00a34.20 pret\ndeliveroo 23.50";
+function placeholderFor(kind){
+  var sym = curSymbol(entryCur());
+  return kind === "in"
+    ? "Type or paste, one per line:\nvinted 24\nasos refund 39.99\n" + sym + "50 mum"
+    : "Type or paste, one per line:\nzara 68\n" + sym + "4.20 pret\ndeliveroo 23.50";
+}
 
 function setKind(k){
   addKind = k;
@@ -2092,7 +2394,7 @@ function setKind(k){
   var isIn = k === "in";
   document.getElementById("add-title").textContent = isIn ? "What came in?" : "What did you spend?";
   var cap = document.getElementById("capture");
-  cap.placeholder = isIn ? IN_PLACEHOLDER : OUT_PLACEHOLDER;
+  cap.placeholder = placeholderFor(k);
   cap.value = "";
   document.getElementById("shot-btn").textContent = isIn ? "Add a photo" : "Add screenshot";
   document.getElementById("bigflag-slot").innerHTML = "";
@@ -2121,10 +2423,108 @@ function paintEntryDate(){
   document.getElementById("daterow").classList.toggle("past", !isToday);
   document.getElementById("entry-date-today").hidden = isToday;
   var when = isToday ? "today" : fromKey(day).toLocaleDateString("en-GB",{day:"numeric", month:"short"});
-  document.getElementById("add-save").textContent =
-    isIn ? (isToday ? "Add money in" : "Add money in on " + when)
-         : "Add to " + when;
+  var label = isIn ? (isToday ? "Add money in" : "Add money in on " + when) : "Add to " + when;
+  var rate = entryRate();
+  if(entryCur() !== baseCur() && rate > 0 && fxTotal() > 0){
+    label += " · " + money(fxTotal() * rate);
+  }
+  document.getElementById("add-save").textContent = label;
 }
+function entryRate(){
+  if(entryCur() === baseCur()) return 1;
+  var v = parseFloat(document.getElementById("entry-rate").value);
+  return v > 0 ? v : 0;
+}
+/* ---- logging in another currency ---- */
+var addFx = { cur:null, rate:1, on:null, src:null, loading:false };
+
+function buildCurSelect(){
+  var sel = document.getElementById("entry-cur");
+  if(sel.options.length) return sel;
+  CUR_LIST.forEach(function(code){
+    var o = document.createElement("option");
+    o.value = code;
+    o.textContent = code + " — " + CUR_NAMES[code];
+    sel.appendChild(o);
+  });
+  return sel;
+}
+function setEntryCur(code){
+  var sel = buildCurSelect();
+  sel.value = code;
+  addFx.cur = code; addFx.rate = 1; addFx.on = null; addFx.src = null;
+  refreshRate();
+}
+function entryCur(){
+  var sel = document.getElementById("entry-cur");
+  return (sel && sel.value) || baseCur();
+}
+/* Pull the rate for the day the entry is for, then let it be overridden —
+   your bank's rate is the true one, and this field is where you put it. */
+function refreshRate(){
+  var from = entryCur(), to = baseCur();
+  var row = document.getElementById("fxrow");
+  document.getElementById("curow").classList.toggle("past", from !== to);
+  if(from === to){
+    row.hidden = true;
+    addFx.rate = 1; addFx.src = null;
+    paintEntryDate();
+    return;
+  }
+  row.hidden = false;
+  document.getElementById("fx-from").textContent = from;
+  document.getElementById("fx-to").textContent = to;
+  var note = document.getElementById("fx-note");
+  var input = document.getElementById("entry-rate");
+  var day = entryDay();
+  var cached = fxCached(from, to, day);
+  if(!cached){
+    note.textContent = "Looking up the rate…";
+    input.value = "";
+  }
+  addFx.loading = true;
+  fetchRate(from, to, day).then(function(res){
+    if(entryCur() !== from || baseCur() !== to) return;   // changed underneath us
+    addFx.loading = false;
+    addFx.rate = res.rate; addFx.on = res.on; addFx.src = res.src;
+    input.value = rateStr(res.rate);
+    paintFxNote();
+  }).catch(function(){
+    if(entryCur() !== from) return;
+    addFx.loading = false;
+    addFx.src = "manual";
+    note.innerHTML = "Couldn't fetch a rate — type one in and it'll still be logged correctly.";
+    if(!input.value) input.value = "";
+    paintEntryDate();
+  });
+}
+function fxTotal(){
+  var t = 0;
+  pendingRows.forEach(function(r){ if(r.amount > 0) t += r.amount; });
+  return t;
+}
+function paintFxNote(){
+  setTimeout(flagBig, 0);
+  var from = entryCur(), to = baseCur();
+  if(from === to) return;
+  var note = document.getElementById("fx-note");
+  var rate = parseFloat(document.getElementById("entry-rate").value);
+  if(!(rate > 0)){
+    note.innerHTML = "Put in a rate and these get stored in " + to + ".";
+    paintEntryDate();
+    return;
+  }
+  addFx.rate = rate;
+  var total = fxTotal();
+  var when = addFx.src === "ECB" && addFx.on
+    ? "ECB rate for " + fromKey(addFx.on).toLocaleDateString("en-GB",{day:"numeric", month:"short"})
+    : addFx.src === "manual" ? "your rate" : "today's rate";
+  note.innerHTML = total > 0
+    ? "<b>" + fmtAmount(total, from) + "</b> comes to <b>" + money(total * rate) + "</b> · " + when
+    : "Stored in " + to + " at this rate · " + when;
+  paintEntryDate();
+}
+
 /* A backdated entry keeps the current time of day, so several logged in a row
    still sort in the order you typed them. */
 function entryTs(day){
@@ -2142,13 +2542,14 @@ function closeAdd(){
 function renderParsed(){
   var box = document.getElementById("parsed");
   box.innerHTML = "";
+  setTimeout(paintFxNote, 0);
   pendingRows.forEach(function(r, idx){
     var row = el("div","prow");
     var a = document.createElement("input");
     a.type = "number"; a.step = "0.01"; a.inputMode = "decimal";
     a.className = "pamt"; a.value = r.amount.toFixed(2);
     a.setAttribute("aria-label","Amount");
-    a.oninput = function(){ r.amount = parseFloat(a.value)||0; flagBig(); };
+    a.oninput = function(){ r.amount = parseFloat(a.value)||0; flagBig(); paintFxNote(); };
     var m = document.createElement("input");
     m.type = "text"; m.className = "pmer"; m.value = r.merchant;
     m.setAttribute("aria-label", addKind === "in" ? "Where from" : "What for");
@@ -2200,18 +2601,22 @@ function flagBig(){
   if(addKind === "in") return flagIn(slot);
   var th = +state.setup.threshold || 0;
   if(th <= 0) return;
-  var big = pendingRows.filter(function(r){ return r.amount >= th; });
+  var rate = entryRate() || 0;
+  var inBase = function(n){ return entryCur() === baseCur() ? n : n * rate; };
+  var big = pendingRows.filter(function(r){ return inBase(r.amount) >= th; });
   if(!big.length) return;
   var f = el("div","bigflag");
   f.appendChild(el("div", null, big.length === 1
-    ? "That's a big one — " + money(big[0].amount) + " on " + big[0].merchant + "."
+    ? "That's a big one — " + money(inBase(big[0].amount)) + " on " + big[0].merchant + "."
     : big.length + " of these are over " + money0(th) + "."));
   var b = el("button","btn full","Park it for 24 hours instead");
   b.style.marginTop = "9px";
   b.onclick = function(){
     big.forEach(function(r){
-      state.pauses.push({ id: uid(), what: r.merchant, amount: r.amount,
-        created: Date.now(), status: "waiting" });
+      var pr = { id: uid(), what: r.merchant, amount: Math.round(inBase(r.amount)*100)/100,
+                 created: Date.now(), status: "waiting" };
+      if(entryCur() !== baseCur()) pr.fx = { cur: entryCur(), amount: r.amount, rate: rate, on: entryDay(), src: addFx.src || "manual" };
+      state.pauses.push(pr);
       var i = pendingRows.indexOf(r);
       if(i > -1) pendingRows.splice(i,1);
     });
@@ -2273,6 +2678,163 @@ function shrink(file, cb){
   };
   fr.onerror = function(){ cb(null); };
   fr.readAsDataURL(file);
+}
+
+/* ============================ edit sheet ============================
+   Every row in Today and in History opens this. Amount, what it was, where it
+   goes, which day and which currency are all changeable after the fact — the
+   id never changes, so an edit syncs like any other change and can't fork the
+   history held on another device.                                          */
+var editing = null;   // { rec, kind }
+
+function makeEditable(row, rec, kind){
+  row.classList.add("tappable");
+  row.setAttribute("role","button");
+  row.setAttribute("tabindex","0");
+  row.setAttribute("aria-label","Edit " + (rec.merchant || rec.source || "entry"));
+  row.onclick = function(){ openEdit(rec, kind); };
+  row.onkeydown = function(e){
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openEdit(rec, kind); }
+  };
+}
+
+function openEdit(rec, kind){
+  editing = { rec: rec, kind: kind };
+  var isIn = kind === "inflow";
+  document.getElementById("edit-title").textContent = isIn ? "Edit money in" : "Edit spend";
+  document.getElementById("e-what-label").textContent = isIn ? "Where from" : "What for";
+  document.getElementById("e-what").value = isIn ? (rec.source || "") : (rec.merchant || "");
+
+  var cat = document.getElementById("e-cat");
+  cat.innerHTML = "";
+  if(isIn){
+    document.querySelector('label[for="e-cat"]').textContent = "Where it goes";
+    [["spend","Into what you can spend"],["save","Into " + (state.setup.goalName || "savings")]].forEach(function(o2){
+      var o = document.createElement("option");
+      o.value = o2[0]; o.textContent = o2[1];
+      if(o2[0] === (rec.dest === "save" ? "save" : "spend")) o.selected = true;
+      cat.appendChild(o);
+    });
+  } else {
+    document.querySelector('label[for="e-cat"]').textContent = "Category";
+    CATS.forEach(function(c){
+      var o = document.createElement("option");
+      o.value = c.id; o.textContent = c.name;
+      if(c.id === rec.category) o.selected = true;
+      cat.appendChild(o);
+    });
+  }
+
+  var cur = document.getElementById("e-cur");
+  if(!cur.options.length){
+    CUR_LIST.forEach(function(code){
+      var o = document.createElement("option");
+      o.value = code; o.textContent = code + " — " + CUR_NAMES[code];
+      cur.appendChild(o);
+    });
+  }
+  cur.value = rec.fx ? rec.fx.cur : baseCur();
+  // show what you actually paid, in the currency you paid it in
+  document.getElementById("e-amt").value = rec.fx ? rec.fx.amount : rec.amount;
+  document.getElementById("e-rate").value = rec.fx ? rateStr(rec.fx.rate) : "";
+  var d = document.getElementById("e-date");
+  d.max = todayKey();
+  d.value = rec.day;
+
+  paintEditFx();
+  document.getElementById("sheet-edit").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeEdit(){
+  editing = null;
+  document.getElementById("sheet-edit").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function editCur(){ return document.getElementById("e-cur").value || baseCur(); }
+function editRate(){
+  if(editCur() === baseCur()) return 1;
+  var v = parseFloat(document.getElementById("e-rate").value);
+  return v > 0 ? v : 0;
+}
+function paintEditFx(){
+  var from = editCur(), to = baseCur();
+  var row = document.getElementById("e-fxrow");
+  if(from === to){ row.hidden = true; return; }
+  row.hidden = false;
+  document.getElementById("e-fx-from").textContent = from;
+  document.getElementById("e-fx-to").textContent = to;
+  var amt = parseFloat(document.getElementById("e-amt").value) || 0;
+  var rate = editRate();
+  var note = document.getElementById("e-fx-note");
+  note.innerHTML = rate > 0 && amt > 0
+    ? "<b>" + fmtAmount(amt, from) + "</b> comes to <b>" + money(amt * rate) + "</b>"
+    : "Put in a rate and this gets stored in " + to + ".";
+}
+/* changing the currency (or the day) re-prices against that day's rate */
+function editLookupRate(){
+  var from = editCur(), to = baseCur();
+  if(from === to){ paintEditFx(); return; }
+  var day = document.getElementById("e-date").value || todayKey();
+  document.getElementById("e-fx-note").textContent = "Looking up the rate…";
+  fetchRate(from, to, day).then(function(res){
+    if(editCur() !== from) return;
+    document.getElementById("e-rate").value = rateStr(res.rate);
+    paintEditFx();
+  }).catch(function(){
+    if(editCur() !== from) return;
+    document.getElementById("e-fx-note").innerHTML = "Couldn't fetch a rate — type one in.";
+  });
+}
+
+function saveEdit(){
+  if(!editing) return;
+  var rec = editing.rec, isIn = editing.kind === "inflow";
+  var amt = parseFloat(document.getElementById("e-amt").value);
+  if(!(amt > 0)){ toast("Needs an amount"); return; }
+  var cur = editCur(), rate = editRate();
+  if(cur !== baseCur() && !(rate > 0)){ toast("Add a rate first"); return; }
+
+  var dv = document.getElementById("e-date").value;
+  var day = /^\d{4}-\d{2}-\d{2}$/.test(dv) && dv <= todayKey() ? dv : rec.day;
+  var what = document.getElementById("e-what").value.trim();
+
+  rec.amount = cur === baseCur() ? Math.round(amt * 100) / 100 : Math.round(amt * rate * 100) / 100;
+  if(cur === baseCur()) delete rec.fx;
+  else rec.fx = { cur: cur, amount: amt, rate: rate, on: day, src: "edited" };
+
+  if(day !== rec.day){
+    // keep it inside the day it moved to, at the same time of day
+    var old = new Date(rec.ts || Date.now());
+    rec.ts = fromKey(day).getTime() + old.getHours()*3600000 + old.getMinutes()*60000 + old.getSeconds()*1000;
+    rec.day = day;
+  }
+  if(isIn){
+    rec.source = what || "Money in";
+    rec.dest = document.getElementById("e-cat").value === "save" ? "save" : "spend";
+  } else {
+    rec.merchant = what || "Unlabelled";
+    rec.category = document.getElementById("e-cat").value;
+  }
+  save(); closeEdit(); render(); toast("Updated");
+}
+
+function deleteEdit(){
+  if(!editing) return;
+  var rec = editing.rec, isIn = editing.kind === "inflow";
+  var btn = document.getElementById("edit-delete");
+  if(!btn.dataset.armed){
+    btn.dataset.armed = "1";
+    btn.textContent = "Tap again to delete";
+    setTimeout(function(){ if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent = "Delete this entry"; } }, 4000);
+    return;
+  }
+  delete btn.dataset.armed;
+  btn.textContent = "Delete this entry";
+  if(isIn) state.inflows = state.inflows.filter(function(x){ return x.id !== rec.id; });
+  else state.spends = state.spends.filter(function(x){ return x.id !== rec.id; });
+  save(); closeEdit(); render(); toast("Deleted");
 }
 
 /* ============================ pause sheet ============================ */
@@ -2417,17 +2979,24 @@ document.getElementById("capture").addEventListener("paste", function(e){
 document.getElementById("add-save").onclick = function(){
   commitCapture();
   if(!pendingRows.length){ toast("Nothing to add yet"); return; }
-  var total = 0, saved = 0;
   var day = entryDay(), ts = entryTs(day);
+  var cur = entryCur(), rate = entryRate();
+  if(cur !== baseCur() && !(rate > 0)){ toast("Add a rate first"); return; }
+  var total = 0, saved = 0, foreign = 0;
   pendingRows.forEach(function(r){
     if(!(r.amount > 0)) return;
-    total += r.amount;
-    var rec = { id: uid(), day: day, amount: r.amount, ts: ts++ };
+    var inBase = cur === baseCur() ? r.amount : Math.round(r.amount * rate * 100) / 100;
+    foreign += r.amount;
+    total += inBase;
+    var rec = { id: uid(), day: day, amount: inBase, ts: ts++ };
+    if(cur !== baseCur()){
+      rec.fx = { cur: cur, amount: r.amount, rate: rate, on: addFx.on || day, src: addFx.src || "manual" };
+    }
     if(pendingImg) rec.img = pendingImg;
     if(addKind === "in"){
       rec.source = r.merchant || "Money in";
       rec.dest = r.dest === "save" ? "save" : "spend";
-      if(rec.dest === "save") saved += r.amount;
+      if(rec.dest === "save") saved += inBase;
       state.inflows.push(rec);
     } else {
       rec.merchant = r.merchant || "Unlabelled";
@@ -2438,21 +3007,30 @@ document.getElementById("add-save").onclick = function(){
   var wasIn = addKind === "in";
   var back = day !== todayKey();
   var when = back ? " on " + fromKey(day).toLocaleDateString("en-GB",{day:"numeric", month:"short"}) : "";
+  var shown = cur === baseCur() ? money(total) : fmtAmount(foreign, cur) + " \u2248 " + money(total);
   save();
   closeAdd();
   // a backdated entry isn't in today's log, so show the day it did land on
   tab = back ? "history" : "today"; render(); window.scrollTo(0,0);
   toast(wasIn
-    ? (saved > 0 ? money(saved) + " to " + (state.setup.goalName || "savings") + when : money(total) + " in" + when)
-    : "Logged " + money(total) + when);
+    ? (saved > 0 ? money(saved) + " to " + (state.setup.goalName || "savings") + when : shown + " in" + when)
+    : "Logged " + shown + when);
 };
 
 Array.prototype.forEach.call(document.querySelectorAll(".segbtn"), function(b){
   b.onclick = function(){ setKind(b.dataset.kind); document.getElementById("capture").focus(); };
 });
 
-document.getElementById("entry-date").onchange = paintEntryDate;
-document.getElementById("entry-date-today").onclick = function(){ setEntryDate(todayKey()); };
+document.getElementById("entry-date").onchange = function(){
+  paintEntryDate();
+  if(entryCur() !== baseCur()) refreshRate();
+};
+document.getElementById("entry-cur").onchange = function(){ addFx.cur = entryCur(); refreshRate(); };
+document.getElementById("entry-rate").oninput = paintFxNote;
+document.getElementById("entry-date-today").onclick = function(){
+  setEntryDate(todayKey());
+  if(entryCur() !== baseCur()) refreshRate();
+};
 
 document.getElementById("pause-save").onclick = function(){
   var what = document.getElementById("p-what").value.trim();
@@ -2465,8 +3043,16 @@ document.getElementById("pause-save").onclick = function(){
   toast("Parked — decide tomorrow");
 };
 
+document.getElementById("edit-close").onclick = closeEdit;
+document.getElementById("edit-save").onclick = saveEdit;
+document.getElementById("edit-delete").onclick = deleteEdit;
+document.getElementById("e-cur").onchange = editLookupRate;
+document.getElementById("e-date").onchange = function(){ if(editCur() !== baseCur()) editLookupRate(); };
+document.getElementById("e-rate").oninput = paintEditFx;
+document.getElementById("e-amt").oninput = paintEditFx;
+
 document.addEventListener("keydown", function(e){
-  if(e.key === "Escape"){ closeAdd(); closePause(); }
+  if(e.key === "Escape"){ closeAdd(); closePause(); closeEdit(); }
 });
 
 load();
