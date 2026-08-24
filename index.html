@@ -320,6 +320,23 @@ textarea#capture::placeholder{color:var(--ink-faint)}
   transition:background .16s ease,color .16s ease;
 }
 .segbtn[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.daterow{
+  display:flex;align-items:center;gap:10px;margin:0 0 12px;
+  background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;
+  padding:9px 12px;
+}
+.daterow label{font-size:14px;font-weight:600;color:var(--ink-soft);flex:none}
+.daterow input[type="date"]{
+  flex:1;min-width:0;background:transparent;border:none;padding:2px 0;
+  font-family:"DM Mono",ui-monospace,monospace;font-size:14px;color:var(--ink);
+}
+.daterow .today{
+  border:1px solid var(--line);background:var(--surface-2);border-radius:8px;
+  padding:5px 10px;font-size:12.5px;font-weight:600;color:var(--ink-soft);flex:none;
+}
+.daterow .today[hidden]{display:none}
+.daterow.past{border-color:var(--warn);background:var(--warn-tint)}
+.daterow.past label{color:var(--warn)}
 .prow.inflow{border-color:var(--brand)}
 .logitem .amt.plus{color:var(--brand);font-weight:500}
 .parsed{display:flex;flex-direction:column;gap:8px;margin-top:14px}
@@ -395,6 +412,11 @@ textarea#capture::placeholder{color:var(--ink-faint)}
     <div class="seg" role="tablist" aria-label="Kind of entry">
       <button role="tab" class="segbtn" data-kind="out" aria-selected="true">Spent</button>
       <button role="tab" class="segbtn" data-kind="in" aria-selected="false">Money in</button>
+    </div>
+    <div class="daterow" id="daterow">
+      <label for="entry-date">Date</label>
+      <input type="date" id="entry-date">
+      <button type="button" class="today" id="entry-date-today" hidden>Back to today</button>
     </div>
     <textarea id="capture" placeholder="Type or paste, one per line:&#10;zara 68&#10;£4.20 pret&#10;deliveroo 23.50"></textarea>
     <div class="row" style="margin-top:10px">
@@ -2052,6 +2074,7 @@ function openAdd(kind){
   document.getElementById("capture").value = "";
   document.getElementById("shot-status").textContent = "Photo library or camera";
   document.getElementById("bigflag-slot").innerHTML = "";
+  setEntryDate(todayKey());
   setKind(kind || "out");
   document.getElementById("sheet-add").classList.add("open");
   document.body.style.overflow = "hidden";
@@ -2071,10 +2094,44 @@ function setKind(k){
   var cap = document.getElementById("capture");
   cap.placeholder = isIn ? IN_PLACEHOLDER : OUT_PLACEHOLDER;
   cap.value = "";
-  document.getElementById("add-save").textContent = isIn ? "Add money in" : "Add to today";
   document.getElementById("shot-btn").textContent = isIn ? "Add a photo" : "Add screenshot";
   document.getElementById("bigflag-slot").innerHTML = "";
+  paintEntryDate();
   renderParsed();
+}
+
+/* ---- which day an entry lands on ---- */
+function entryDay(){
+  var i = document.getElementById("entry-date");
+  var v = i && i.value ? i.value : "";
+  // a date that isn't a real past-or-present day falls back to today
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(v)) return todayKey();
+  if(v > todayKey()) return todayKey();
+  return v;
+}
+function setEntryDate(key){
+  var i = document.getElementById("entry-date");
+  i.max = todayKey();
+  i.value = key;
+  paintEntryDate();
+}
+function paintEntryDate(){
+  var day = entryDay(), isToday = day === todayKey();
+  var isIn = addKind === "in";
+  document.getElementById("daterow").classList.toggle("past", !isToday);
+  document.getElementById("entry-date-today").hidden = isToday;
+  var when = isToday ? "today" : fromKey(day).toLocaleDateString("en-GB",{day:"numeric", month:"short"});
+  document.getElementById("add-save").textContent =
+    isIn ? (isToday ? "Add money in" : "Add money in on " + when)
+         : "Add to " + when;
+}
+/* A backdated entry keeps the current time of day, so several logged in a row
+   still sort in the order you typed them. */
+function entryTs(day){
+  if(day === todayKey()) return Date.now();
+  var now = new Date();
+  return fromKey(day).getTime() +
+         now.getHours()*3600000 + now.getMinutes()*60000 + now.getSeconds()*1000;
 }
 
 function closeAdd(){
@@ -2361,10 +2418,11 @@ document.getElementById("add-save").onclick = function(){
   commitCapture();
   if(!pendingRows.length){ toast("Nothing to add yet"); return; }
   var total = 0, saved = 0;
+  var day = entryDay(), ts = entryTs(day);
   pendingRows.forEach(function(r){
     if(!(r.amount > 0)) return;
     total += r.amount;
-    var rec = { id: uid(), day: todayKey(), amount: r.amount, ts: Date.now() };
+    var rec = { id: uid(), day: day, amount: r.amount, ts: ts++ };
     if(pendingImg) rec.img = pendingImg;
     if(addKind === "in"){
       rec.source = r.merchant || "Money in";
@@ -2378,17 +2436,23 @@ document.getElementById("add-save").onclick = function(){
     }
   });
   var wasIn = addKind === "in";
+  var back = day !== todayKey();
+  var when = back ? " on " + fromKey(day).toLocaleDateString("en-GB",{day:"numeric", month:"short"}) : "";
   save();
   closeAdd();
-  tab = "today"; render(); window.scrollTo(0,0);
+  // a backdated entry isn't in today's log, so show the day it did land on
+  tab = back ? "history" : "today"; render(); window.scrollTo(0,0);
   toast(wasIn
-    ? (saved > 0 ? money(saved) + " to " + (state.setup.goalName || "savings") : money(total) + " in")
-    : "Logged " + money(total));
+    ? (saved > 0 ? money(saved) + " to " + (state.setup.goalName || "savings") + when : money(total) + " in" + when)
+    : "Logged " + money(total) + when);
 };
 
 Array.prototype.forEach.call(document.querySelectorAll(".segbtn"), function(b){
   b.onclick = function(){ setKind(b.dataset.kind); document.getElementById("capture").focus(); };
 });
+
+document.getElementById("entry-date").onchange = paintEntryDate;
+document.getElementById("entry-date-today").onclick = function(){ setEntryDate(todayKey()); };
 
 document.getElementById("pause-save").onclick = function(){
   var what = document.getElementById("p-what").value.trim();
