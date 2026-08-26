@@ -469,6 +469,37 @@ textarea#capture::placeholder{color:var(--ink-faint)}
   </div>
 </div>
 
+<div class="sheet" id="sheet-fund" role="dialog" aria-label="Savings movement">
+  <div class="inner">
+    <header>
+      <h3 id="fund-title">Put money in</h3>
+      <button class="btn ghost" id="fund-close">Close</button>
+    </header>
+    <div class="seg" role="tablist" aria-label="Direction">
+      <button role="tab" class="segbtn" data-fund="in" aria-selected="true">Put in</button>
+      <button role="tab" class="segbtn" data-fund="out" aria-selected="false">Take out</button>
+    </div>
+    <div class="stack">
+      <div class="field"><label for="f-amt">Amount</label><input id="f-amt" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div>
+      <div class="field"><label for="f-note">What for</label><input id="f-note" type="text" placeholder="Monthly transfer, car repair…"></div>
+      <div class="field"><label for="f-cur">Currency</label><select id="f-cur"></select></div>
+      <div class="fxrow" id="f-fxrow" hidden>
+        <div class="fxline">
+          <label for="f-rate">1 <span id="f-fx-from">—</span> =</label>
+          <input type="number" id="f-rate" step="any" inputmode="decimal">
+          <span id="f-fx-to">—</span>
+        </div>
+        <div class="fxnote" id="f-fx-note"></div>
+      </div>
+      <div class="field"><label for="f-date">Date</label><input id="f-date" type="date"></div>
+      <button class="btn ghost full" id="fund-delete" hidden style="color:var(--over);border-color:var(--over)">Delete this movement</button>
+    </div>
+    <div class="sheetfoot">
+      <button class="btn primary full" id="fund-save">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="sheet" id="sheet-edit" role="dialog" aria-label="Edit entry">
   <div class="inner">
     <header>
@@ -558,7 +589,7 @@ function blankState(){
     v:1,
     setup:{ done:false, income:0, bills:[], savings:0, payday:1,
             goalName:"", goalTarget:0, threshold:50, startedOn:todayKey(), currency:"GBP" },
-    spends:[], inflows:[], pauses:[], banked:0, skipped:0, seen:{}, updatedAt:0
+    spends:[], inflows:[], pauses:[], fund:[], banked:0, skipped:0, seen:{}, updatedAt:0
   };
 }
 
@@ -569,6 +600,7 @@ function normalise(p){
   s.spends = Array.isArray(s.spends) ? s.spends : [];
   s.inflows = Array.isArray(s.inflows) ? s.inflows : [];
   s.pauses = Array.isArray(s.pauses) ? s.pauses : [];
+  s.fund = Array.isArray(s.fund) ? s.fund : [];
   s.updatedAt = +s.updatedAt || 0;
   return s;
 }
@@ -576,7 +608,7 @@ function normalise(p){
 /* Merge two copies of the record without ever dropping a spend.
    Entries are keyed by id, so the union is always the fuller history. */
 function entryCount(x){
-  return (x.spends||[]).length + (x.inflows||[]).length + (x.pauses||[]).length;
+  return (x.spends||[]).length + (x.inflows||[]).length + (x.pauses||[]).length + (x.fund||[]).length;
 }
 
 function merge(a, b){
@@ -586,7 +618,7 @@ function merge(a, b){
   else if(cb === 0 && ca > 0){ newer = a; older = b; }
   else { newer = (a.updatedAt||0) >= (b.updatedAt||0) ? a : b; older = newer === a ? b : a; }
   var out = normalise(JSON.parse(JSON.stringify(newer)));
-  ["spends","inflows","pauses"].forEach(function(k){
+  ["spends","inflows","pauses","fund"].forEach(function(k){
     var seen = {};
     out[k].forEach(function(x){ seen[x.id] = true; });
     older[k].forEach(function(x){ if(x && x.id && !seen[x.id]){ out[k].push(x); seen[x.id] = true; } });
@@ -1102,7 +1134,7 @@ function budget(){
     allowance:allowance, leftToday:leftToday, left:spendable - spentPeriod,
     savedSoFar:savedSoFar, surplus:surplus, trackedDays:trackedDays,
     boost:boost, inSaved:sumWhere(inNow, "save"), inToday:inflowsOn(todayKey()),
-    goalNow: goalTotal()
+    goalNow: fundBalance()
   };
 }
 
@@ -1165,10 +1197,22 @@ function cycles(){
   return out;
 }
 
-function goalTotal(){
+/* What the fund actually holds: where you said it started, every movement
+   you've logged since, and any money-in you routed straight to savings.
+   Nothing projected — the underspend estimate is shown separately, because
+   money you merely haven't spent yet isn't money in the account. */
+function fundMoves(){
+  return (state.fund || []).slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+}
+function fundBalance(){
   var t = +state.banked || 0;
-  cycles().forEach(function(c){ t += c.saved + c.surplus + c.inSaved; });
-  return Math.max(0, t);
+  (state.fund || []).forEach(function(m){ t += (+m.amount || 0); });
+  (state.inflows || []).forEach(function(f){ if(f.dest === "save") t += (+f.amount || 0); });
+  return t;
+}
+/* What this cycle would add on the current pace, if you moved it across */
+function fundPace(b){
+  return Math.max(0, (b.savedSoFar || 0) + Math.max(0, b.surplus || 0));
 }
 
 /* ============================ parsing ============================ */
@@ -1615,32 +1659,101 @@ function line(a, bv, total){
 function goalCard(b){
   var c = el("div","card"); c.style.marginTop = "16px";
   var target = +state.setup.goalTarget || 0;
+  var now = b.goalNow;
   var head = el("div","spread");
-  head.appendChild(el("h2","sect", state.setup.goalName || "Savings goal"));
+  head.appendChild(el("h2","sect", state.setup.goalName || "Savings"));
+  head.appendChild(el("span","eyebrow","Balance"));
   c.appendChild(head);
 
-  if(target <= 0){
-    c.appendChild(el("p","hint","Set a goal in Setup and this bar fills every time you come in under."));
-    return c;
-  }
-  var now = b.goalNow;
-  var pct = Math.max(0, Math.min(100, now/target*100));
-  var g = el("div","goalnum num", money0(now)); g.style.marginTop = "6px";
+  var g = el("div","goalnum num", money(now)); g.style.marginTop = "6px";
   c.appendChild(g);
-  var th = el("div","thermo");
-  var tr = el("div","track");
-  var fl = el("div","fill"); fl.style.width = pct + "%";
-  tr.appendChild(fl); th.appendChild(tr);
-  var mk = el("div","marks");
-  mk.appendChild(el("span",null, Math.round(pct) + "% there"));
-  mk.appendChild(el("span",null, "goal " + money0(target)));
-  th.appendChild(mk);
-  c.appendChild(th);
-  var rem = Math.max(0, target - now);
-  c.appendChild(el("p","hint", rem <= 0
-    ? "You've hit it. Pick a new one."
-    : money0(rem) + " to go. Every day you finish under budget nudges this along."));
+
+  if(target > 0){
+    var pct = Math.max(0, Math.min(100, now/target*100));
+    var th = el("div","thermo");
+    var tr = el("div","track");
+    var fl = el("div","fill"); fl.style.width = pct + "%";
+    tr.appendChild(fl); th.appendChild(tr);
+    var mk = el("div","marks");
+    mk.appendChild(el("span",null, Math.round(pct) + "% there"));
+    mk.appendChild(el("span",null, "goal " + money0(target)));
+    th.appendChild(mk);
+    c.appendChild(th);
+    var rem = Math.max(0, target - now);
+    c.appendChild(el("p","hint", rem <= 0 ? "You've hit it. Pick a new one." : money0(rem) + " to go."));
+  } else {
+    c.appendChild(el("p","hint","Set a target in Setup and this gets a progress bar."));
+  }
+
+  // the estimate, kept well away from the balance so the two can't be confused
+  var pace = fundPace(b);
+  if(pace > 0){
+    var pl = el("p","hint"); pl.style.marginTop = "10px";
+    pl.innerHTML = "Not counted above: on this cycle's pace you're on track to put " +
+      "<b>" + money(pace) + "</b> aside. Log it here once it actually moves.";
+    c.appendChild(pl);
+  }
+
+  var acts = el("div","addbar"); acts.style.marginTop = "14px";
+  var pair = el("div","pair");
+  var addb = el("button","btn primary","Put money in");
+  addb.onclick = function(){ openFund(null, "in"); };
+  var outb = el("button","btn","Take money out");
+  outb.onclick = function(){ openFund(null, "out"); };
+  pair.appendChild(addb); pair.appendChild(outb);
+  acts.appendChild(pair);
+  c.appendChild(acts);
+
+  var moves = fundMoves();
+  var autos = (state.inflows || []).filter(function(f){ return f.dest === "save"; });
+  if(moves.length || autos.length || (+state.banked || 0) > 0){
+    var box = el("div"); box.style.marginTop = "10px";
+    box.appendChild(el("div","eyebrow","Movements"));
+    moves.slice(0, 8).forEach(function(m){ box.appendChild(fundRow(m)); });
+    autos.slice().sort(function(x,y){ return (y.ts||0)-(x.ts||0); }).slice(0, 4).forEach(function(f){
+      var r = el("div","logitem");
+      var sw = el("div","swatch"); sw.style.background = "var(--brand)";
+      r.appendChild(sw);
+      var who = el("div","who");
+      who.appendChild(el("div","m", f.source || "Money in"));
+      who.appendChild(el("div","c","Routed here when you logged it"));
+      r.appendChild(who);
+      r.appendChild(el("div","amt plus num", "+" + money(f.amount)));
+      makeEditable(r, f, "inflow");
+      box.appendChild(r);
+    });
+    if((+state.banked || 0) > 0){
+      var br = el("div","logitem");
+      var bsw = el("div","swatch"); bsw.style.background = "var(--ink-faint)";
+      br.appendChild(bsw);
+      var bwho = el("div","who");
+      bwho.appendChild(el("div","m","Starting balance"));
+      bwho.appendChild(el("div","c","Set in Setup"));
+      br.appendChild(bwho);
+      br.appendChild(el("div","amt num", money(+state.banked)));
+      box.appendChild(br);
+    }
+    if(moves.length > 8) box.appendChild(el("p","empty", (moves.length - 8) + " older movements not shown"));
+    c.appendChild(box);
+  }
   return c;
+}
+
+function fundRow(m){
+  var r = el("div","logitem");
+  var out = (+m.amount || 0) < 0;
+  var sw = el("div","swatch");
+  sw.style.background = out ? "var(--over)" : "var(--brand)";
+  r.appendChild(sw);
+  var who = el("div","who");
+  who.appendChild(el("div","m", m.note || (out ? "Taken out" : "Put in")));
+  var when = fromKey(m.day).toLocaleDateString("en-GB",{day:"numeric", month:"short"});
+  who.appendChild(el("div","c", (m.fx && m.fx.cur !== baseCur()) ? when + " · " + origMoney(m.fx) : when));
+  r.appendChild(who);
+  var amt = el("div","amt num" + (out ? "" : " plus"), (out ? "−" : "+") + money(Math.abs(m.amount)));
+  r.appendChild(amt);
+  makeEditable(r, m, "fund");
+  return r;
 }
 
 function calendarCard(b){
@@ -2032,14 +2145,14 @@ function renderSetup(){
   st3.appendChild(gn);
   st3.appendChild(numField("Target", "goalTarget", s.goalTarget, ""));
   var ab2 = el("div","field");
-  ab2.appendChild(el("label", null, "Already saved"));
+  ab2.appendChild(el("label", null, "Starting balance"));
   var abi = document.createElement("input");
   abi.type = "number"; abi.inputMode = "decimal"; abi.step = "0.01";
   abi.value = (+state.banked) ? state.banked : "";
   abi.placeholder = "0";
   abi.oninput = function(){ state.banked = parseFloat(abi.value) || 0; save(); };
   ab2.appendChild(abi);
-  ab2.appendChild(el("div","hint","Where the bar starts from"));
+  ab2.appendChild(el("div","hint","What was already in there before you started tracking. Everything after that goes in Month \u2192 " + (state.setup.goalName || "Savings") + " as a movement, so the balance stays real."));
   st3.appendChild(ab2);
   st3.appendChild(numField("Sleep-on-it threshold", "threshold", s.threshold,
     "Anything at or above this gets offered a 24-hour hold"));
@@ -2313,7 +2426,7 @@ function applyCurrency(to, rate){
     s.threshold = conv(s.threshold);
     (s.bills||[]).forEach(function(b){ b.amount = conv(b.amount); });
     state.banked = conv(state.banked);
-    ["spends","inflows","pauses"].forEach(function(k){
+    ["spends","inflows","pauses","fund"].forEach(function(k){
       (state[k]||[]).forEach(function(x){
         x.amount = conv(x.amount);
         // a foreign-currency entry keeps what it really cost; only the rate moves
@@ -2388,7 +2501,7 @@ function placeholderFor(kind){
 function setKind(k){
   addKind = k;
   pendingRows = [];
-  Array.prototype.forEach.call(document.querySelectorAll(".segbtn"), function(b){
+  Array.prototype.forEach.call(document.querySelectorAll("#sheet-add .segbtn"), function(b){
     b.setAttribute("aria-selected", String(b.dataset.kind === k));
   });
   var isIn = k === "in";
@@ -2680,6 +2793,136 @@ function shrink(file, cb){
   fr.readAsDataURL(file);
 }
 
+/* ============================ savings sheet ============================
+   The fund is a ledger, not a projection: what it holds is the starting
+   balance plus what you've actually moved. Money in and money out both land
+   here, so the number on the Month tab is a balance you could check against
+   your bank.                                                              */
+var fundEditing = null, fundDir = "in";
+
+function openFund(rec, dir){
+  fundEditing = rec || null;
+  fundDir = rec ? ((+rec.amount || 0) < 0 ? "out" : "in") : (dir || "in");
+  setFundDir(fundDir);
+  document.getElementById("f-amt").value = rec ? Math.abs(rec.amount) : "";
+  document.getElementById("f-note").value = rec ? (rec.note || "") : "";
+  var cur = document.getElementById("f-cur");
+  if(!cur.options.length){
+    CUR_LIST.forEach(function(code){
+      var o = document.createElement("option");
+      o.value = code; o.textContent = code + " — " + CUR_NAMES[code];
+      cur.appendChild(o);
+    });
+  }
+  cur.value = rec && rec.fx ? rec.fx.cur : baseCur();
+  if(rec && rec.fx) document.getElementById("f-amt").value = rec.fx.amount;
+  document.getElementById("f-rate").value = rec && rec.fx ? rateStr(rec.fx.rate) : "";
+  var d = document.getElementById("f-date");
+  d.max = todayKey();
+  d.value = rec ? rec.day : todayKey();
+  document.getElementById("fund-delete").hidden = !rec;
+  paintFundFx();
+  document.getElementById("sheet-fund").classList.add("open");
+  document.body.style.overflow = "hidden";
+  if(!rec) setTimeout(function(){ document.getElementById("f-amt").focus(); }, 60);
+}
+function closeFund(){
+  fundEditing = null;
+  document.getElementById("sheet-fund").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function setFundDir(dir){
+  fundDir = dir;
+  Array.prototype.forEach.call(document.querySelectorAll("#sheet-fund .segbtn"), function(b){
+    b.setAttribute("aria-selected", String(b.dataset.fund === dir));
+  });
+  var goal = state.setup.goalName || "savings";
+  document.getElementById("fund-title").textContent =
+    dir === "out" ? "Take out of " + goal : "Put into " + goal;
+  document.getElementById("fund-save").textContent = fundEditing ? "Save changes"
+    : (dir === "out" ? "Take it out" : "Put it in");
+}
+function fundCur(){ return document.getElementById("f-cur").value || baseCur(); }
+function fundRate(){
+  if(fundCur() === baseCur()) return 1;
+  var v = parseFloat(document.getElementById("f-rate").value);
+  return v > 0 ? v : 0;
+}
+function paintFundFx(){
+  var from = fundCur(), to = baseCur();
+  var row = document.getElementById("f-fxrow");
+  if(from === to){ row.hidden = true; return; }
+  row.hidden = false;
+  document.getElementById("f-fx-from").textContent = from;
+  document.getElementById("f-fx-to").textContent = to;
+  var amt = parseFloat(document.getElementById("f-amt").value) || 0;
+  var rate = fundRate();
+  document.getElementById("f-fx-note").innerHTML = rate > 0 && amt > 0
+    ? "<b>" + fmtAmount(amt, from) + "</b> comes to <b>" + money(amt * rate) + "</b>"
+    : "Put in a rate and this gets stored in " + to + ".";
+}
+function fundLookupRate(){
+  var from = fundCur(), to = baseCur();
+  if(from === to){ paintFundFx(); return; }
+  var day = document.getElementById("f-date").value || todayKey();
+  document.getElementById("f-fx-note").textContent = "Looking up the rate…";
+  fetchRate(from, to, day).then(function(res){
+    if(fundCur() !== from) return;
+    document.getElementById("f-rate").value = rateStr(res.rate);
+    paintFundFx();
+  }).catch(function(){
+    if(fundCur() !== from) return;
+    document.getElementById("f-fx-note").innerHTML = "Couldn't fetch a rate — type one in.";
+  });
+}
+
+function saveFund(){
+  var amt = parseFloat(document.getElementById("f-amt").value);
+  if(!(amt > 0)){ toast("Needs an amount"); return; }
+  var cur = fundCur(), rate = fundRate();
+  if(cur !== baseCur() && !(rate > 0)){ toast("Add a rate first"); return; }
+  var dv = document.getElementById("f-date").value;
+  var day = /^\d{4}-\d{2}-\d{2}$/.test(dv) && dv <= todayKey() ? dv : todayKey();
+  var inBase = cur === baseCur() ? Math.round(amt * 100) / 100 : Math.round(amt * rate * 100) / 100;
+  var signed = fundDir === "out" ? -inBase : inBase;
+  var note = document.getElementById("f-note").value.trim();
+
+  if(fundEditing){
+    var rec = fundEditing;
+    rec.amount = signed;
+    rec.note = note;
+    if(day !== rec.day){
+      var old = new Date(rec.ts || Date.now());
+      rec.ts = fromKey(day).getTime() + old.getHours()*3600000 + old.getMinutes()*60000 + old.getSeconds()*1000;
+      rec.day = day;
+    }
+    if(cur === baseCur()) delete rec.fx;
+    else rec.fx = { cur: cur, amount: amt, rate: rate, on: day, src: "edited" };
+  } else {
+    var m = { id: uid(), day: day, amount: signed, ts: entryTs(day), note: note };
+    if(cur !== baseCur()) m.fx = { cur: cur, amount: amt, rate: rate, on: day, src: "manual" };
+    state.fund.push(m);
+  }
+  save(); closeFund(); render();
+  toast(fundDir === "out" ? money(inBase) + " taken out" : money(inBase) + " put aside");
+}
+
+function deleteFund(){
+  if(!fundEditing) return;
+  var btn = document.getElementById("fund-delete");
+  if(!btn.dataset.armed){
+    btn.dataset.armed = "1";
+    btn.textContent = "Tap again to delete";
+    setTimeout(function(){ if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent = "Delete this movement"; } }, 4000);
+    return;
+  }
+  delete btn.dataset.armed;
+  btn.textContent = "Delete this movement";
+  var id = fundEditing.id;
+  state.fund = state.fund.filter(function(x){ return x.id !== id; });
+  save(); closeFund(); render(); toast("Deleted");
+}
+
 /* ============================ edit sheet ============================
    Every row in Today and in History opens this. Amount, what it was, where it
    goes, which day and which currency are all changeable after the fact — the
@@ -2688,6 +2931,15 @@ function shrink(file, cb){
 var editing = null;   // { rec, kind }
 
 function makeEditable(row, rec, kind){
+  if(kind === "fund"){
+    row.classList.add("tappable");
+    row.setAttribute("role","button");
+    row.setAttribute("tabindex","0");
+    row.setAttribute("aria-label","Edit " + (rec.note || "movement"));
+    row.onclick = function(){ openFund(rec); };
+    row.onkeydown = function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openFund(rec); } };
+    return;
+  }
   row.classList.add("tappable");
   row.setAttribute("role","button");
   row.setAttribute("tabindex","0");
@@ -3017,7 +3269,7 @@ document.getElementById("add-save").onclick = function(){
     : "Logged " + shown + when);
 };
 
-Array.prototype.forEach.call(document.querySelectorAll(".segbtn"), function(b){
+Array.prototype.forEach.call(document.querySelectorAll("#sheet-add .segbtn"), function(b){
   b.onclick = function(){ setKind(b.dataset.kind); document.getElementById("capture").focus(); };
 });
 
@@ -3043,6 +3295,17 @@ document.getElementById("pause-save").onclick = function(){
   toast("Parked — decide tomorrow");
 };
 
+document.getElementById("fund-close").onclick = closeFund;
+document.getElementById("fund-save").onclick = saveFund;
+document.getElementById("fund-delete").onclick = deleteFund;
+document.getElementById("f-cur").onchange = fundLookupRate;
+document.getElementById("f-date").onchange = function(){ if(fundCur() !== baseCur()) fundLookupRate(); };
+document.getElementById("f-rate").oninput = paintFundFx;
+document.getElementById("f-amt").oninput = paintFundFx;
+Array.prototype.forEach.call(document.querySelectorAll("#sheet-fund .segbtn"), function(b){
+  b.onclick = function(){ setFundDir(b.dataset.fund); };
+});
+
 document.getElementById("edit-close").onclick = closeEdit;
 document.getElementById("edit-save").onclick = saveEdit;
 document.getElementById("edit-delete").onclick = deleteEdit;
@@ -3052,7 +3315,7 @@ document.getElementById("e-rate").oninput = paintEditFx;
 document.getElementById("e-amt").oninput = paintEditFx;
 
 document.addEventListener("keydown", function(e){
-  if(e.key === "Escape"){ closeAdd(); closePause(); closeEdit(); }
+  if(e.key === "Escape"){ closeAdd(); closePause(); closeEdit(); closeFund(); }
 });
 
 load();

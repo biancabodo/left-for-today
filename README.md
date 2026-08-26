@@ -41,6 +41,21 @@ data repo and revoke it if the device is lost.
 Without a token the app still works — history just stays on that one device, and
 *Copy my data* / *Back up to a file* are the way out.
 
+## The savings balance
+
+The number on the Month tab is a **balance**, not an estimate: the starting
+balance you set in Setup, plus every movement you've logged, plus any money-in
+you routed straight to savings. It should reconcile against your actual account.
+
+*Put money in* / *Take money out* record movements, which are listed under the
+balance and can be tapped to edit or delete. Foreign-currency movements work the
+same way as spends.
+
+What the app thinks you're *on track* to save — the pro-rata set-aside plus
+however far under pace you're running — is shown as a separate line, clearly
+marked as not counted in the balance. Money you merely haven't spent yet isn't
+money in the account.
+
 ## Currencies
 
 Setup → **Your currency** sets what everything is displayed and stored in. Changing
