@@ -41,6 +41,22 @@ data repo and revoke it if the device is lost.
 Without a token the app still works — history just stays on that one device, and
 *Copy my data* / *Back up to a file* are the way out.
 
+## Planned expenses
+
+The **Ahead** tab holds costs you know are coming — a present, a flight, an MOT.
+Each one spreads itself evenly over the days between when you added it and when
+it's due, and that daily slice comes out of what Today tells you that you can
+spend. By the time the date arrives the money has quietly been held back rather
+than landing as a shock.
+
+The deduction is visible everywhere it applies: *Held for what's ahead* appears
+in the Month tab's breakdown and in Setup's maths summary.
+
+Each plan can be switched to reminder-only if you'd rather it didn't touch your
+daily number. Something overdue keeps holding its money back instead of quietly
+lapsing, and shows amber. *Mark as paid* turns the plan into an ordinary spend on
+the day it happened, so it lands in the history like anything else.
+
 ## The savings balance
 
 The number on the Month tab is a **balance**, not an estimate: the starting

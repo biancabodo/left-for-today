@@ -226,6 +226,7 @@ header.hero{padding:26px 0 10px;text-align:center}
 .thermo .marks{display:flex;justify-content:space-between;margin-top:8px}
 .thermo .marks span{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
 .goalnum{font-family:"Fraunces",Georgia,serif;font-size:30px;font-weight:400;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.planwhat{font-weight:600;font-size:16px;line-height:1.25}
 
 /* ---------- calendar ---------- */
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}
@@ -288,7 +289,8 @@ nav.tabs .inner{
 }
 nav.tabs button{
   flex:1;border:none;background:transparent;border-radius:10px;
-  padding:9px 4px;font-size:13px;font-weight:600;color:var(--ink-faint);
+  padding:9px 2px;font-size:12.5px;font-weight:600;color:var(--ink-faint);
+  white-space:nowrap;
   transition:background .18s ease,color .18s ease;
 }
 nav.tabs button[aria-selected="true"]{background:var(--surface-2);color:var(--ink)}
@@ -357,6 +359,18 @@ textarea#capture::placeholder{color:var(--ink-faint)}
 .fxline span{font-family:"DM Mono",ui-monospace,monospace;font-size:13px;color:var(--ink-soft)}
 .fxnote{margin-top:7px;font-size:12.5px;color:var(--ink-faint);line-height:1.4}
 .fxnote b{color:var(--ink)}
+.toggle{
+  display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 13px;
+}
+.toggle[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint)}
+.toggle .dot{
+  width:18px;height:18px;border-radius:50%;flex:none;margin-top:2px;
+  border:2px solid var(--line);background:var(--surface);
+}
+.toggle[aria-pressed="true"] .dot{border-color:var(--brand);background:var(--brand);box-shadow:inset 0 0 0 3px var(--brand-tint)}
+.toggle .lab{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.toggle .lab span{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
 .prow.inflow{border-color:var(--brand)}
 .logitem .amt.plus{color:var(--brand);font-weight:500}
 .parsed{display:flex;flex-direction:column;gap:8px;margin-top:14px}
@@ -410,6 +424,7 @@ textarea#capture::placeholder{color:var(--ink-faint)}
 <div id="shell">
   <div id="view-today"></div>
   <div id="view-month" hidden></div>
+  <div id="view-ahead" hidden></div>
   <div id="view-history" hidden></div>
   <div id="view-setup" hidden></div>
 </div>
@@ -418,6 +433,7 @@ textarea#capture::placeholder{color:var(--ink-faint)}
   <div class="inner">
     <button role="tab" aria-selected="true" data-tab="today">Today</button>
     <button role="tab" aria-selected="false" data-tab="month">Month</button>
+    <button role="tab" aria-selected="false" data-tab="ahead">Ahead</button>
     <button role="tab" aria-selected="false" data-tab="history">History</button>
     <button role="tab" aria-selected="false" data-tab="setup">Setup</button>
   </div>
@@ -465,6 +481,42 @@ textarea#capture::placeholder{color:var(--ink-faint)}
     </p>
     <div class="sheetfoot">
       <button class="btn primary full" id="add-save">Add to today</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet-plan" role="dialog" aria-label="Planned expense">
+  <div class="inner">
+    <header>
+      <h3 id="plan-title">Plan something</h3>
+      <button class="btn ghost" id="plan-close">Close</button>
+    </header>
+    <p class="hint">Something you know is coming. Its cost gets held back a bit each day between now and then.</p>
+    <div class="stack" style="margin-top:14px">
+      <div class="field"><label for="pl-what">What is it?</label><input id="pl-what" type="text" placeholder="Mum's birthday, Lisbon flights, MOT…"></div>
+      <div class="field"><label for="pl-amt">Roughly how much?</label><input id="pl-amt" type="number" inputmode="decimal" step="0.01" placeholder="0.00"></div>
+      <div class="field"><label for="pl-cur">Currency</label><select id="pl-cur"></select></div>
+      <div class="fxrow" id="pl-fxrow" hidden>
+        <div class="fxline">
+          <label for="pl-rate">1 <span id="pl-fx-from">—</span> =</label>
+          <input type="number" id="pl-rate" step="any" inputmode="decimal">
+          <span id="pl-fx-to">—</span>
+        </div>
+        <div class="fxnote" id="pl-fx-note"></div>
+      </div>
+      <div class="field"><label for="pl-due">When?</label><input id="pl-due" type="date"></div>
+      <div class="field"><label for="pl-cat">Category</label><select id="pl-cat"></select></div>
+      <button type="button" class="toggle" id="pl-reserve" aria-pressed="true">
+        <span class="dot"></span>
+        <span class="lab">
+          <b>Hold the money back</b>
+          <span id="pl-reserve-note">Takes a slice out of your daily number until it's due</span>
+        </span>
+      </button>
+      <button class="btn ghost full" id="plan-delete" hidden style="color:var(--over);border-color:var(--over)">Delete this plan</button>
+    </div>
+    <div class="sheetfoot">
+      <button class="btn primary full" id="plan-save">Add it</button>
     </div>
   </div>
 </div>
@@ -589,7 +641,7 @@ function blankState(){
     v:1,
     setup:{ done:false, income:0, bills:[], savings:0, payday:1,
             goalName:"", goalTarget:0, threshold:50, startedOn:todayKey(), currency:"GBP" },
-    spends:[], inflows:[], pauses:[], fund:[], banked:0, skipped:0, seen:{}, updatedAt:0
+    spends:[], inflows:[], pauses:[], fund:[], plans:[], banked:0, skipped:0, seen:{}, updatedAt:0
   };
 }
 
@@ -601,6 +653,7 @@ function normalise(p){
   s.inflows = Array.isArray(s.inflows) ? s.inflows : [];
   s.pauses = Array.isArray(s.pauses) ? s.pauses : [];
   s.fund = Array.isArray(s.fund) ? s.fund : [];
+  s.plans = Array.isArray(s.plans) ? s.plans : [];
   s.updatedAt = +s.updatedAt || 0;
   return s;
 }
@@ -608,7 +661,8 @@ function normalise(p){
 /* Merge two copies of the record without ever dropping a spend.
    Entries are keyed by id, so the union is always the fuller history. */
 function entryCount(x){
-  return (x.spends||[]).length + (x.inflows||[]).length + (x.pauses||[]).length + (x.fund||[]).length;
+  return (x.spends||[]).length + (x.inflows||[]).length + (x.pauses||[]).length +
+         (x.fund||[]).length + (x.plans||[]).length;
 }
 
 function merge(a, b){
@@ -618,7 +672,7 @@ function merge(a, b){
   else if(cb === 0 && ca > 0){ newer = a; older = b; }
   else { newer = (a.updatedAt||0) >= (b.updatedAt||0) ? a : b; older = newer === a ? b : a; }
   var out = normalise(JSON.parse(JSON.stringify(newer)));
-  ["spends","inflows","pauses","fund"].forEach(function(k){
+  ["spends","inflows","pauses","fund","plans"].forEach(function(k){
     var seen = {};
     out[k].forEach(function(x){ seen[x.id] = true; });
     older[k].forEach(function(x){ if(x && x.id && !seen[x.id]){ out[k].push(x); seen[x.id] = true; } });
@@ -1009,6 +1063,53 @@ function period(){
   return { start:start, end:end, days:days, elapsed:elapsed, remaining:days - elapsed + 1 };
 }
 
+/* ============================ planned expenses ============================
+   A known cost with a date on it is dead money already — you just haven't
+   handed it over yet. So each plan spreads itself evenly over the days
+   between when you added it and when it's due, and that slice comes out of
+   what you're told you can spend. By the time the day arrives the money has
+   quietly been held back instead of ambushing you.                        */
+function planWindow(pl){
+  var from = startOfDay(fromKey(pl.from || todayKey()));
+  var due = startOfDay(fromKey(pl.due));
+  var today = startOfDay(new Date());
+  // something overdue hasn't stopped costing — hold the rest back now
+  if(due < today) due = today;
+  if(due < from) due = from;
+  return { from:from, due:due, days: Math.max(1, daysBetween(from, due) + 1) };
+}
+function activePlans(){
+  return (state.plans || []).slice().sort(function(a,b){
+    return a.due === b.due ? (a.ts||0) - (b.ts||0) : (a.due < b.due ? -1 : 1);
+  });
+}
+/* how much of the planned money falls inside a given stretch of days */
+function reservedBetween(start, end){
+  var t = 0;
+  (state.plans || []).forEach(function(pl){
+    if(pl.reserve === false) return;
+    var amt = +pl.amount || 0;
+    if(!(amt > 0)) return;
+    var w = planWindow(pl);
+    var s = w.from > start ? w.from : start;
+    var e = w.due < end ? w.due : end;
+    var n = daysBetween(s, e) + 1;
+    if(n <= 0) return;
+    t += amt * (n / w.days);
+  });
+  return t;
+}
+/* what's been notionally set aside for one plan so far */
+function planProgress(pl){
+  var w = planWindow(pl);
+  var today = startOfDay(new Date());
+  var done = Math.max(0, Math.min(w.days, daysBetween(w.from, today) + 1));
+  var amt = +pl.amount || 0;
+  return { days:w.days, done:done, perDay: amt / w.days,
+           set: pl.reserve === false ? 0 : amt * (done / w.days),
+           left: Math.max(0, daysBetween(today, startOfDay(fromKey(pl.due)))) };
+}
+
 /* ============================ money ============================ */
 /* Currencies. The first block is everything the ECB publishes daily, which is
    what we can get a rate for on a *past* date. The second block still works —
@@ -1104,7 +1205,8 @@ function budget(){
   var p = period();
   var inNow = inflowsBetween(p.start, p.end);
   var boost = sumWhere(inNow, "spend");
-  var spendable = Math.max(0, (+state.setup.income||0) - billsTotal() - (+state.setup.savings||0)) + boost;
+  var reserved = reservedBetween(p.start, p.end);
+  var spendable = Math.max(0, (+state.setup.income||0) - billsTotal() - (+state.setup.savings||0) - reserved) + boost;
   var base = p.days > 0 ? spendable / p.days : 0;
 
   var inPeriod = state.spends.filter(function(s){
@@ -1133,7 +1235,7 @@ function budget(){
     p:p, spendable:spendable, base:base, spentPeriod:spentPeriod, spentToday:spentToday,
     allowance:allowance, leftToday:leftToday, left:spendable - spentPeriod,
     savedSoFar:savedSoFar, surplus:surplus, trackedDays:trackedDays,
-    boost:boost, inSaved:sumWhere(inNow, "save"), inToday:inflowsOn(todayKey()),
+    boost:boost, reserved:reserved, inSaved:sumWhere(inNow, "save"), inToday:inflowsOn(todayKey()),
     goalNow: fundBalance()
   };
 }
@@ -1142,8 +1244,9 @@ function budget(){
    history itself, so nothing is ever archived away or aged out. */
 var _cyc = { key:null, val:null };
 function cycles(){
-  var ck = [state.updatedAt||0, state.spends.length, state.inflows.length, state.setup.payday, state.setup.income,
-            billsTotal(), state.setup.savings, state.setup.startedOn, todayKey()].join("|");
+  var ck = [state.updatedAt||0, state.spends.length, state.inflows.length, (state.plans||[]).length,
+            state.setup.payday, state.setup.income, billsTotal(), state.setup.savings,
+            state.setup.startedOn, todayKey()].join("|");
   if(_cyc.key === ck) return _cyc.val;
   var pd = state.setup.payday || 1;
   var baseSpendable = Math.max(0, (+state.setup.income||0) - billsTotal() - (+state.setup.savings||0));
@@ -1161,9 +1264,11 @@ function cycles(){
     var inflows = inflowsBetween(cur, end);
     var boost = sumWhere(inflows, "spend");
     var inSaved = sumWhere(inflows, "save");
-    var spendable = baseSpendable + boost;
+    var cycReserved = reservedBetween(cur, end);
+    var cycCore = Math.max(0, baseSpendable - cycReserved);
+    var spendable = cycCore + boost;
     var base = days > 0 ? spendable / days : 0;
-    var coreBase = days > 0 ? baseSpendable / days : 0;
+    var coreBase = days > 0 ? cycCore / days : 0;
 
     var effStart = trackFrom > cur ? trackFrom : cur;
     var effEnd = end < today ? end : today;
@@ -1185,7 +1290,7 @@ function cycles(){
 
     out.push({
       start:cur, end:end, days:days, base:base, spendable:spendable,
-      tracked:tracked, items:items, spent:spent, cats:cats,
+      tracked:tracked, items:items, spent:spent, cats:cats, reserved:cycReserved,
       inflows:inflows, boost:boost, inSaved:inSaved,
       under:under, over:over, open: end >= today,
       saved: savings * (tracked / days),
@@ -1302,6 +1407,7 @@ function toast(msg){
 function render(){
   document.getElementById("view-today").hidden = tab !== "today";
   document.getElementById("view-month").hidden = tab !== "month";
+  document.getElementById("view-ahead").hidden = tab !== "ahead";
   document.getElementById("view-history").hidden = tab !== "history";
   document.getElementById("view-setup").hidden = tab !== "setup";
   Array.prototype.forEach.call(document.querySelectorAll("nav.tabs button"), function(b){
@@ -1309,6 +1415,7 @@ function render(){
   });
   if(tab === "today") renderToday();
   if(tab === "month") renderMonth();
+  if(tab === "ahead") renderAhead();
   if(tab === "history") renderHistory();
   if(tab === "setup") renderSetup();
 }
@@ -1630,6 +1737,7 @@ function spendableCard(b){
     s.appendChild(line("Your usual pot", money(b.spendable - b.boost)));
     s.appendChild(line("Money in", "+" + money(b.boost)));
   }
+  if((b.reserved || 0) > 0) s.appendChild(line("Held for what's ahead", "−" + money(b.reserved)));
   s.appendChild(line("Spendable this cycle", money(b.spendable)));
   s.appendChild(line("Spent so far", money(b.spentPeriod)));
   s.appendChild(line("Left for " + b.p.remaining + " day" + (b.p.remaining===1?"":"s"), money(b.left), true));
@@ -2043,6 +2151,120 @@ function entryList(c){
   return wrap;
 }
 
+/* ---------- AHEAD ---------- */
+function renderAhead(){
+  var v = document.getElementById("view-ahead");
+  v.innerHTML = "";
+  var b = budget();
+  var plans = activePlans();
+
+  var head = el("header","hero"); head.style.paddingBottom = "0";
+  head.appendChild(el("div","eyebrow","Ahead"));
+  var t = el("h1","sect"); t.style.cssText = "font-size:30px;margin:6px 0 0";
+  t.textContent = "What's coming";
+  head.appendChild(t);
+  v.appendChild(head);
+
+  var c1 = el("div","card"); c1.style.marginTop = "16px";
+  if(!plans.length){
+    c1.appendChild(el("h2","sect","Nothing planned yet"));
+    c1.appendChild(el("p","hint","Add something you know is coming — a birthday, a flight, an MOT — " +
+      "and its cost gets held back a little at a time, so the day it lands doesn't take a chunk out of that week."));
+  } else {
+    var total = plans.reduce(function(a,pl){ return a + (+pl.amount||0); }, 0);
+    var per = plans.reduce(function(a,pl){
+      return a + (pl.reserve === false ? 0 : planProgress(pl).perDay);
+    }, 0);
+    var sm = el("div","summary");
+    sm.appendChild(line(plans.length + " planned cost" + (plans.length===1?"":"s"), money(total)));
+    sm.appendChild(line("Held back this cycle", money(b.reserved || 0)));
+    sm.appendChild(line("A day, out of your allowance", money(per), true));
+    c1.appendChild(sm);
+    var note = el("p","hint"); note.style.marginTop = "12px";
+    note.innerHTML = per > 0
+      ? "Your daily number on Today is already <b>" + money(per) + "</b> lighter because of these."
+      : "None of these are being held back. Turn one on to spread its cost.";
+    c1.appendChild(note);
+  }
+  var addb = el("button","btn primary full","Plan something");
+  addb.style.marginTop = "14px";
+  addb.onclick = function(){ openPlan(null); };
+  c1.appendChild(addb);
+  v.appendChild(c1);
+
+  plans.forEach(function(pl){ v.appendChild(planCard(pl)); });
+}
+
+function planCard(pl){
+  var pr = planProgress(pl);
+  var due = fromKey(pl.due);
+  var overdue = startOfDay(due) < startOfDay(new Date());
+  var c = el("div","card"); c.style.marginTop = "14px";
+  if(overdue) c.style.borderColor = "var(--warn)";
+
+  var head = el("div","spread");
+  var left = el("div");
+  left.appendChild(el("div","planwhat", pl.what || "Something"));
+  var when = due.toLocaleDateString("en-GB",{weekday:"short", day:"numeric", month:"short"});
+  left.appendChild(el("div","hint", overdue ? "was due " + when
+    : pr.left === 0 ? "due today" : when + " · " + pr.left + " day" + (pr.left===1?"":"s") + " away"));
+  head.appendChild(left);
+  var amt = el("div","goalnum num", money(pl.amount));
+  amt.style.fontSize = "26px";
+  head.appendChild(amt);
+  c.appendChild(head);
+
+  if(pl.reserve === false){
+    c.appendChild(el("p","hint","Not being held back — this one's just a reminder."));
+  } else {
+    var pct = Math.max(0, Math.min(100, pr.days ? (pr.done / pr.days) * 100 : 0));
+    var th = el("div","thermo");
+    var tr = el("div","track");
+    var fl = el("div","fill"); fl.style.width = pct + "%";
+    if(overdue) fl.style.background = "var(--warn)";
+    tr.appendChild(fl); th.appendChild(tr);
+    var mk = el("div","marks");
+    mk.appendChild(el("span",null, money(pr.set) + " held back"));
+    mk.appendChild(el("span",null, money(pr.perDay) + "/day"));
+    th.appendChild(mk);
+    c.appendChild(th);
+    if(pr.set > 0){
+      var hn = el("p","hint"); hn.style.marginTop = "10px";
+      hn.innerHTML = "That " + money(pr.set) + " has been kept out of your daily numbers, so it's " +
+        "sitting in what you haven't spent. Paying this still logs the full " + money(pl.amount) + ".";
+      c.appendChild(hn);
+    }
+  }
+  if(pl.fx && pl.fx.cur !== baseCur()){
+    c.appendChild(el("p","hint", origMoney(pl.fx) + " at the rate when you added it"));
+  }
+
+  var acts = el("div","pair"); acts.style.marginTop = "12px";
+  var paid = el("button","btn primary","Mark as paid");
+  paid.onclick = function(){ payPlan(pl); };
+  var ed = el("button","btn","Edit");
+  ed.onclick = function(){ openPlan(pl); };
+  acts.appendChild(paid); acts.appendChild(ed);
+  c.appendChild(acts);
+  return c;
+}
+
+/* Paying it turns the plan into an ordinary spend on the day it happened,
+   so it lands in the history like everything else and stops being held back. */
+function payPlan(pl){
+  var held = pl.reserve === false ? 0 : planProgress(pl).set;
+  var day = pl.due > todayKey() ? todayKey() : pl.due;
+  var rec = { id: uid(), day: day, amount: +pl.amount || 0, ts: entryTs(day),
+              merchant: pl.what || "Planned", category: pl.category || "other" };
+  if(pl.fx) rec.fx = { cur:pl.fx.cur, amount:pl.fx.amount, rate:pl.fx.rate, on:day, src:pl.fx.src };
+  state.spends.push(rec);
+  state.plans = state.plans.filter(function(x){ return x.id !== pl.id; });
+  save(); render();
+  toast(held > 0
+    ? "Logged " + money(rec.amount) + " · " + money(held) + " was already held back"
+    : "Logged " + money(rec.amount) + " — it's in your history now");
+}
+
 /* ---------- SETUP ---------- */
 function welcome(){
   var w = el("div"); w.style.padding = "34px 0 0";
@@ -2167,6 +2389,7 @@ function renderSetup(){
   sm.appendChild(idLine("sum-in", "Pay in", money(+s.income||0)));
   sm.appendChild(idLine("sum-bills", "Fixed costs out", "−" + money(billsTotal())));
   sm.appendChild(idLine("sum-sav", "Savings out", "−" + money(+s.savings||0)));
+  if((b.reserved || 0) > 0) sm.appendChild(idLine("sum-ahead", "Held for what's ahead", "−" + money(b.reserved)));
   sm.appendChild(idLine("sum-spend", "Yours to spend", money(b.spendable), true));
   c4.appendChild(sm);
   var pl = el("p","hint"); pl.id = "sum-note"; pl.style.marginTop = "12px";
@@ -2426,7 +2649,7 @@ function applyCurrency(to, rate){
     s.threshold = conv(s.threshold);
     (s.bills||[]).forEach(function(b){ b.amount = conv(b.amount); });
     state.banked = conv(state.banked);
-    ["spends","inflows","pauses","fund"].forEach(function(k){
+    ["spends","inflows","pauses","fund","plans"].forEach(function(k){
       (state[k]||[]).forEach(function(x){
         x.amount = conv(x.amount);
         // a foreign-currency entry keeps what it really cost; only the rate moves
@@ -2453,6 +2676,7 @@ function refreshSetupNumbers(){
   set("sum-in", money(+s.income||0));
   set("sum-bills", "−" + money(billsTotal()));
   set("sum-sav", "−" + money(+s.savings||0));
+  set("sum-ahead", "−" + money(b.reserved || 0));
   set("sum-spend", money(b.spendable));
   var note = document.getElementById("sum-note");
   if(note) note.innerHTML = "That's about <b>" + money(b.base) + " a day</b> across a " + b.p.days +
@@ -2791,6 +3015,141 @@ function shrink(file, cb){
   };
   fr.onerror = function(){ cb(null); };
   fr.readAsDataURL(file);
+}
+
+/* ============================ plan sheet ============================ */
+var planEditing = null;
+
+function openPlan(pl){
+  planEditing = pl || null;
+  document.getElementById("plan-title").textContent = pl ? "Edit plan" : "Plan something";
+  document.getElementById("plan-save").textContent = pl ? "Save changes" : "Add it";
+  document.getElementById("plan-delete").hidden = !pl;
+  document.getElementById("pl-what").value = pl ? (pl.what || "") : "";
+  document.getElementById("pl-amt").value = pl ? (pl.fx ? pl.fx.amount : pl.amount) : "";
+
+  var cur = document.getElementById("pl-cur");
+  if(!cur.options.length){
+    CUR_LIST.forEach(function(code){
+      var o = document.createElement("option");
+      o.value = code; o.textContent = code + " — " + CUR_NAMES[code];
+      cur.appendChild(o);
+    });
+  }
+  cur.value = pl && pl.fx ? pl.fx.cur : baseCur();
+  document.getElementById("pl-rate").value = pl && pl.fx ? rateStr(pl.fx.rate) : "";
+
+  var cat = document.getElementById("pl-cat");
+  cat.innerHTML = "";
+  CATS.forEach(function(c){
+    var o = document.createElement("option");
+    o.value = c.id; o.textContent = c.name;
+    if(pl && c.id === pl.category) o.selected = true;
+    cat.appendChild(o);
+  });
+  // guess from the name the same way a logged spend does, until you say otherwise
+  delete cat.dataset.touched;
+  if(pl) cat.dataset.touched = "1";
+
+  var d = document.getElementById("pl-due");
+  d.min = todayKey();
+  d.removeAttribute("max");
+  d.value = pl ? pl.due : keyOf(addDays(new Date(), 30));
+  setPlanReserve(pl ? pl.reserve !== false : true);
+  paintPlanFx();
+  document.getElementById("sheet-plan").classList.add("open");
+  document.body.style.overflow = "hidden";
+  if(!pl) setTimeout(function(){ document.getElementById("pl-what").focus(); }, 60);
+}
+function closePlan(){
+  planEditing = null;
+  document.getElementById("sheet-plan").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function setPlanReserve(on){
+  document.getElementById("pl-reserve").setAttribute("aria-pressed", String(!!on));
+  document.getElementById("pl-reserve-note").textContent = on
+    ? "Takes a slice out of your daily number until it's due"
+    : "Just a reminder — your daily number won't change";
+}
+function planReserveOn(){ return document.getElementById("pl-reserve").getAttribute("aria-pressed") === "true"; }
+function planCur(){ return document.getElementById("pl-cur").value || baseCur(); }
+function planRate(){
+  if(planCur() === baseCur()) return 1;
+  var v = parseFloat(document.getElementById("pl-rate").value);
+  return v > 0 ? v : 0;
+}
+function paintPlanFx(){
+  var from = planCur(), to = baseCur();
+  var row = document.getElementById("pl-fxrow");
+  if(from === to){ row.hidden = true; return; }
+  row.hidden = false;
+  document.getElementById("pl-fx-from").textContent = from;
+  document.getElementById("pl-fx-to").textContent = to;
+  var amt = parseFloat(document.getElementById("pl-amt").value) || 0;
+  var rate = planRate();
+  document.getElementById("pl-fx-note").innerHTML = rate > 0 && amt > 0
+    ? "<b>" + fmtAmount(amt, from) + "</b> is about <b>" + money(amt * rate) + "</b> at today's rate"
+    : "Put in a rate and this gets held back in " + to + ".";
+}
+function planLookupRate(){
+  var from = planCur(), to = baseCur();
+  if(from === to){ paintPlanFx(); return; }
+  document.getElementById("pl-fx-note").textContent = "Looking up the rate…";
+  // a future cost can only be estimated at what the rate is now
+  fetchRate(from, to, todayKey()).then(function(res){
+    if(planCur() !== from) return;
+    document.getElementById("pl-rate").value = rateStr(res.rate);
+    paintPlanFx();
+  }).catch(function(){
+    if(planCur() !== from) return;
+    document.getElementById("pl-fx-note").innerHTML = "Couldn't fetch a rate — type one in.";
+  });
+}
+
+function savePlan(){
+  var amt = parseFloat(document.getElementById("pl-amt").value);
+  if(!(amt > 0)){ toast("Needs an amount"); return; }
+  var cur = planCur(), rate = planRate();
+  if(cur !== baseCur() && !(rate > 0)){ toast("Add a rate first"); return; }
+  var dv = document.getElementById("pl-due").value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dv)){ toast("Needs a date"); return; }
+  var what = document.getElementById("pl-what").value.trim() || "Something";
+  var inBase = cur === baseCur() ? Math.round(amt * 100) / 100 : Math.round(amt * rate * 100) / 100;
+
+  if(planEditing){
+    var pl = planEditing;
+    pl.what = what; pl.amount = inBase; pl.due = dv;
+    pl.category = document.getElementById("pl-cat").value;
+    pl.reserve = planReserveOn();
+    if(cur === baseCur()) delete pl.fx;
+    else pl.fx = { cur:cur, amount:amt, rate:rate, on:todayKey(), src:"manual" };
+  } else {
+    var np = { id: uid(), what: what, amount: inBase, due: dv, from: todayKey(),
+               category: document.getElementById("pl-cat").value,
+               reserve: planReserveOn(), ts: Date.now() };
+    if(cur !== baseCur()) np.fx = { cur:cur, amount:amt, rate:rate, on:todayKey(), src:"manual" };
+    state.plans.push(np);
+  }
+  save(); closePlan(); tab = "ahead"; render(); window.scrollTo(0,0);
+  toast(planEditing ? "Updated" : "Planned — " + money(inBase) + " by " +
+        fromKey(dv).toLocaleDateString("en-GB",{day:"numeric", month:"short"}));
+}
+
+function deletePlan(){
+  if(!planEditing) return;
+  var btn = document.getElementById("plan-delete");
+  if(!btn.dataset.armed){
+    btn.dataset.armed = "1";
+    btn.textContent = "Tap again to delete";
+    setTimeout(function(){ if(btn.dataset.armed){ delete btn.dataset.armed; btn.textContent = "Delete this plan"; } }, 4000);
+    return;
+  }
+  delete btn.dataset.armed;
+  btn.textContent = "Delete this plan";
+  var id = planEditing.id;
+  state.plans = state.plans.filter(function(x){ return x.id !== id; });
+  save(); closePlan(); render(); toast("Deleted");
 }
 
 /* ============================ savings sheet ============================
@@ -3295,6 +3654,19 @@ document.getElementById("pause-save").onclick = function(){
   toast("Parked — decide tomorrow");
 };
 
+document.getElementById("plan-close").onclick = closePlan;
+document.getElementById("plan-save").onclick = savePlan;
+document.getElementById("plan-delete").onclick = deletePlan;
+document.getElementById("pl-cur").onchange = planLookupRate;
+document.getElementById("pl-rate").oninput = paintPlanFx;
+document.getElementById("pl-amt").oninput = paintPlanFx;
+document.getElementById("pl-reserve").onclick = function(){ setPlanReserve(!planReserveOn()); };
+document.getElementById("pl-cat").onchange = function(){ this.dataset.touched = "1"; };
+document.getElementById("pl-what").oninput = function(){
+  var cat = document.getElementById("pl-cat");
+  if(!cat.dataset.touched) cat.value = categorise(this.value);
+};
+
 document.getElementById("fund-close").onclick = closeFund;
 document.getElementById("fund-save").onclick = saveFund;
 document.getElementById("fund-delete").onclick = deleteFund;
@@ -3315,7 +3687,7 @@ document.getElementById("e-rate").oninput = paintEditFx;
 document.getElementById("e-amt").oninput = paintEditFx;
 
 document.addEventListener("keydown", function(e){
-  if(e.key === "Escape"){ closeAdd(); closePause(); closeEdit(); closeFund(); }
+  if(e.key === "Escape"){ closeAdd(); closePause(); closeEdit(); closeFund(); closePlan(); }
 });
 
 load();
